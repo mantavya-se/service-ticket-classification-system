@@ -5,3 +5,11 @@
 # Use regex to identify sections (split by section headings)
 # Create an embedding per section
 # store the embedding plus all the aforementioned data together
+
+from pathlib import Path 
+import re
+
+KNOW_BASE_DIR = Path("knowledge_base")
+
+def normalize(text: str) -> str:
+    return re.sub(r"[^a-z0-9]", "_", text.lower()).strip(_)
