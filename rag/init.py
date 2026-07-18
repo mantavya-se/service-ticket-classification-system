@@ -21,6 +21,8 @@ try:
     conn = get_connection()
     cur = conn.cursor()
 
+    cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+
     cur.execute("""
     CREATE TABLE IF NOT EXISTS knowledge_vdb (
         id SERIAL PRIMARY KEY,
