@@ -6,6 +6,12 @@ from pgvector.psycopg2 import register_vector
 
 load_dotenv()
 
+MODEL_NAME="sentence-transformers/all-MiniLM-L6-v2"
+model = SentenceTransformer(MODEL_NAME)
+
+def vectorize(test: str):
+    return model.encode(test, normalize_embeddings=True)
+
 def get_connection():
     return psycopg2.connect(
         dbname=os.getenv("DB_NAME"),
@@ -15,48 +21,50 @@ def get_connection():
         port=os.getenv("DB_PORT")
     )
 
-MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+def retrieve(text: str, limit: int = 3):
+    embedding = vectorize(text)
 
-test = input("Subcategory + Description: ")
+    cur = None 
+    conn = None
 
-model = SentenceTransformer(MODEL_NAME)
-embedding = model.encode(test, normalize_embeddings=True)
+    try:
+        conn = get_connection()
+        register_vector(conn)
+        cur = conn.cursor()
 
-cur = None 
-conn = None
+        cur.execute("""
+        SELECT 
+            file_name, 
+            category, 
+            subcategory, 
+            section,
+            chunk_text,
+            embedding <=> %s AS distance
+        FROM knowledge_vdb
+        ORDER BY distance
+        LIMIT %s;
+        """, (embedding, limit))
 
-try:
-    conn = get_connection()
-    register_vector(conn)
-    cur = conn.cursor()
+        rows = cur.fetchall()
 
-    cur.execute("""
-    SELECT 
-        file_name, 
-        category, 
-        subcategory, 
-        section,
-        chunk_text,
-        embedding <=> %s AS distance
-    FROM knowledge_vdb
-    WHERE section = 'Troubleshooting Steps'
-    ORDER BY distance
-    LIMIT 3;
-    """, (embedding,))
+        return [
+            {
+                "file_name": row[0],
+                "category": row[1],
+                "subcategory": row[2],
+                "section": row[3],
+                "chunk_text": row[4],
+                "distance": float(row[5]),
+                "similarity": float(1 - row[5]),
+            }
+            for row in rows
+        ]
 
-    rows = cur.fetchall()
-    for row in rows:
-        print(row)
-    
-except Exception as e:
-    print("Connection failed:")
-    print(e)
+    except Exception:
+        raise
 
-finally:
-    if cur:
-        cur.close()
-    if conn:
-        conn.close()
-
-
-
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
