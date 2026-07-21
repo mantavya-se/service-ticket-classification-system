@@ -82,7 +82,8 @@ try:
         predicted_confidence DOUBLE PRECISION,
         confirmed_category TEXT,
         source TEXT NOT NULL DEFAULT 'Production',
-        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        reviewed_at TIMESTAMPTZ
     )
     """)
 
