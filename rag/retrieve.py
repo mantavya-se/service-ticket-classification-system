@@ -21,7 +21,7 @@ def get_connection():
         port=os.getenv("DB_PORT")
     )
 
-def retrieve(text: str, limit: int = 3):
+def retrieve(text: str, limit: int = 5):
     embedding = vectorize(text)
 
     cur = None 
