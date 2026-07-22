@@ -1,6 +1,71 @@
 import { useState } from "react";
 import "./App.css";
 
+function AnalysisResult({ result }) {
+  if (!result) {
+    return null;
+  }
+
+  const category = result["Category"];
+  const confidence = result["Confidence"];
+  const similarDocs = result["Similar Docs"];
+
+  return (
+    <section>
+      <h2>Analysis Result</h2>
+
+      <div>
+        <p>
+          <strong>Suggested Category:</strong>{" "}
+          {category ?? "Not available"}
+        </p>
+
+        <p>
+          <strong>Confidence:</strong>{" "}
+          {typeof confidence === "number"
+            ? `${(confidence * 100).toFixed(2)}%`
+            : "Not available"}
+        </p>
+      </div>
+
+      <div>
+        <h3>Recommended Knowledge Base Results</h3>
+
+        {similarDocs?.length > 0 ? (
+          similarDocs.map((article, index) => (
+            <article key={`${article.file_name}-${article.section}-${index}`}>
+              <h4>
+                {article.subcategory ??
+                  article.file_name ??
+                  `Recommendation ${index + 1}`}
+              </h4>
+
+              <p>
+                <strong>Category:</strong> {article.category}
+              </p>
+
+              <p>
+                <strong>Section:</strong> {article.section}
+              </p>
+
+              <p>
+                <strong>Similarity:</strong>{" "}
+                {(article.similarity * 100).toFixed(2)}%
+              </p>
+
+              <p>{article.chunk_text}</p>
+
+              <hr />
+            </article>
+          ))
+        ) : (
+          <p>No knowledge-base recommendations were found.</p>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function TicketForm() {
   const [ticketId, setTicketId] = useState("");
   const [subcategory, setSubcategory] = useState("");
@@ -35,25 +100,26 @@ function TicketForm() {
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
+      const data = await response.json();
 
-        console.error("FastAPI error:", errorData);
+      if (!response.ok) {
+        console.error("FastAPI error:", data);
 
         throw new Error(
-          errorData?.detail
-            ? JSON.stringify(errorData.detail)
+          typeof data.detail === "string"
+            ? data.detail
             : `Request failed with status ${response.status}`
         );
       }
-
-      const data = await response.json();
 
       console.log("Ticket analysis result:", data);
       setResult(data);
     } catch (requestError) {
       console.error("Request failed:", requestError);
-      setError(requestError.message || "Unable to analyze the ticket.");
+
+      setError(
+        requestError.message || "Unable to analyze the ticket."
+      );
     } finally {
       setLoading(false);
     }
@@ -139,36 +205,13 @@ function TicketForm() {
       </form>
 
       {error && (
-        <div>
+        <section>
           <h2>Error</h2>
           <p>{error}</p>
-        </div>
+        </section>
       )}
 
-      {result && (
-        <div>
-          <h2>Analysis Result</h2>
-
-          {result.category && (
-            <p>
-              <strong>Suggested Category:</strong> {result.category}
-            </p>
-          )}
-
-          {result.confidence !== undefined && (
-            <p>
-              <strong>Confidence:</strong>{" "}
-              {typeof result.confidence === "number"
-                ? `${(result.confidence * 100).toFixed(2)}%`
-                : result.confidence}
-            </p>
-          )}
-
-          <h3>Full API Response</h3>
-
-          <pre>{JSON.stringify(result, null, 2)}</pre>
-        </div>
-      )}
+      <AnalysisResult result={result} />
     </div>
   );
 }
