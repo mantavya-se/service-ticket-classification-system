@@ -83,7 +83,8 @@ try:
         confirmed_category TEXT,
         source TEXT NOT NULL DEFAULT 'Production',
         created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        reviewed_at TIMESTAMPTZ
+        reviewed_at TIMESTAMPTZ,
+        used_for_training BOOLEAN DEFAULT FALSE
     )
     """)
 
