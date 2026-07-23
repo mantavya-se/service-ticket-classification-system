@@ -1,19 +1,16 @@
 import re
 import pandas as pd
 
-DATA_FILE = "combined_ticket.csv"
-OUTPUT_FILE = "validation_output.txt"
+def validate(DATA_FILE, OUTPUT_FILE):
+    EXPECTED_COLUMNS = ["Ticket ID", "Category", "Subcategory", "Priority", "Description", "Source"]
+    VALID_CATEGORIES = {"Hardware", "Software", "Access", "Security", "Network"}
+    VALID_PRIORITIES = {"Low" ,"Medium", "High", "Critical"}
+    VALID_SOURCES = {"Public", "Synthetic"}
 
-EXPECTED_COLUMNS = ["Ticket ID", "Category", "Subcategory", "Priority", "Description", "Source"]
-VALID_CATEGORIES = {"Hardware", "Software", "Access", "Security", "Network"}
-VALID_PRIORITIES = {"Low" ,"Medium", "High", "Critical"}
-VALID_SOURCES = {"Public", "Synthetic"}
+    EMAIL_RE = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
+    PHONE_RE = r"(\+?\d{1,3}[\s.-]?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}"
+    NAME_RE = r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,2}\b"
 
-EMAIL_RE = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
-PHONE_RE = r"(\+?\d{1,3}[\s.-]?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}"
-NAME_RE = r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,2}\b"
-
-def validate():
     error = []
     warning = []
 
@@ -26,7 +23,7 @@ def validate():
     missing_columns = set(EXPECTED_COLUMNS) - set(df.columns)
     if missing_columns:
         error.append(f"Data is missing the column: {missing_columns}")
-        print_results(error, warning)
+        print_results(error, warning, OUTPUT_FILE)
         return
     
     required_fields = ["Ticket ID", "Category", "Description", "Source"]
@@ -65,9 +62,9 @@ def validate():
     if not possible_name.empty:
         warning.append(f"Possible name found: {possible_name[['Ticket ID', 'Subcategory', 'Description']].to_string(index=False)}")
 
-    print_results(error, warning)
+    print_results(error, warning, OUTPUT_FILE)
 
-def print_results(errors, warnings):
+def print_results(errors, warnings, OUTPUT_FILE):
     with open(OUTPUT_FILE, "w") as file:
         file.write("")
         file.write("Validation Results\n")
@@ -88,4 +85,7 @@ def print_results(errors, warnings):
             file.write("No warnings found")
 
 if __name__ == "__main__":
-    validate()
+    validate(
+        DATA_FILE = "combined_ticket.csv",
+        OUTPUT_FILE = "validation_output.txt"
+    )
