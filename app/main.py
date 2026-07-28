@@ -22,11 +22,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+@app.get("/api/")
 async def root():
-    return{"message": "Hello World!"}
+    return{"message": "API is healthy and running"}
 
-@app.post("/analyze-ticket/")
+@app.post("/api/analyze-ticket/")
 def analyze_ticket(request: TicketRequest):
     category, confidence = predict_ticket(
         request.subcategory,
@@ -51,7 +51,7 @@ def analyze_ticket(request: TicketRequest):
         "Similar Docs": similar
     }
 
-@app.patch("/tickets/{ticket_id}/review")
+@app.patch("/api/tickets/{ticket_id}/review")
 def review_ticket(ticket_id: str, review: TicketReview):
     ticket_found = update_data(
         ticket_id = ticket_id,
@@ -69,11 +69,11 @@ def review_ticket(ticket_id: str, review: TicketReview):
             "reviewed": True,
         }
 
-@app.get("/tickets")
+@app.get("/api/tickets")
 def get_tickets():
     return get_all_tickets()
 
-@app.get("/tickets/{ticket_id}")
+@app.get("/api/tickets/{ticket_id}")
 def fetch_specific_ticket(ticket_id: str):
     ticket = get_specific_ticket(ticket_id)
 
