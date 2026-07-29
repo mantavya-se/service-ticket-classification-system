@@ -1,0 +1,82 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - api/api-deployment.yaml
+  - api/api-service.yaml
+  - api/service-account.yaml
+
+  - frontend/frontend-deployment.yaml
+  - frontend/frontend-service.yaml
+
+  - jobs/insert-job.yaml
+  - jobs/retrain-job.yaml
+  - jobs/service-ticket-job.yaml
+  - jobs/train-job.yaml
+
+  - ingress.yaml
+  - namespace.yaml
+  - secret.yaml
+
+configMapGenerator:
+  - name: service-ticket-api-config
+    namespace: service-ticket
+    literals:
+      - DB_HOST=service-tickets.ce7o8kaymho2.us-east-1.rds.amazonaws.com
+      - DB_PORT=5432
+      - DB_NAME=service_tickets
+      - DB_SSLMODE=require
+      - AWS_REGION=us-east-1
+      - MODEL_S3_BUCKET=service-ticket-data-835577334660
+      - MODEL_S3_KEY=models/production/ticket-classifier.joblib
+      - MODEL_LOCAL_PATH=/tmp/ticket-classifier.joblib
+      - LOG_LEVEL=INFO
+
+  - name: service-ticket-job-config
+    namespace: service-ticket
+    literals:
+      - AWS_REGION=us-east-1
+      - DB_HOST=service-tickets.ce7o8kaymho2.us-east-1.rds.amazonaws.com
+      - DB_PORT=5432
+      - DB_NAME=service_tickets
+      - DB_SSLMODE=require
+
+      - S3_BUCKET_NAME=service-ticket-data-835577334660
+
+      - PUBLIC_DATASET_KEY=datasets/raw/public-it-tickets.csv
+      - SYNTHETIC_DATASET_KEY=datasets/raw/synthetic-tickets.csv
+      - COMBINED_DATASET_KEY=datasets/processed/combined-tickets.csv
+      - DATASET_VERSIONS_PREFIX=datasets/versions/
+      - VALIDATION_REPORTS_PREFIX=reports/validation/
+
+      - KNOWLEDGE_BASE_PREFIX=knowledge-base/
+
+      - MODEL_PRODUCTION_KEY=models/production/ticket-classifier.joblib
+      - MODEL_VERSIONS_PREFIX=models/versions/
+
+      - LOCAL_DATA_DIR=/tmp/data
+      - LOCAL_MODEL_DIR=/tmp/models
+      - LOCAL_KB_DIR=/tmp/knowledge-base
+
+      - RETRAIN_MIN_RECORDS=5
+
+images:
+  - name: api-ecr-url
+    newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api
+    newTag: REPLACE_WITH_IMAGE_TAG
+  
+  - name: frontend-ecr-url
+    newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend
+    newTag: REPLACE_WITH_IMAGE_TAG
+
+  - name: insert-ecr-url
+    newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-insert
+    newTag: REPLACE_WITH_IMAGE_TAG
+
+  - name: retrain-ecr-url
+    newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-retrain
+    newTag: REPLACE_WITH_IMAGE_TAG
+
+  - name: train-ecr-url
+    newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-train
+    newTag: REPLACE_WITH_IMAGE_TAG
