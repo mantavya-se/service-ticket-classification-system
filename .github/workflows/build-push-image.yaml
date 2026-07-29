@@ -1,0 +1,89 @@
+name: Build and Push Images
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: "835577334660"
+  ECR_REGISTRY: 835577334660.dkr.ecr.us-east-1.amazonaws.com
+
+jobs:
+  build:
+    runs-on: arc-runner-set
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      - name: Log in to Amazon ECR
+        run: |
+          aws ecr get-login-password \
+            --region "${AWS_REGION}" |
+          docker login \
+            --username AWS \
+            --password-stdin "${ECR_REGISTRY}"
+
+      - name: Set image tag
+        run: |
+          echo "IMAGE_TAG=${GITHUB_SHA::12}" >> "$GITHUB_ENV"
+
+      - name: Build API image
+        run: |
+          docker build \
+            -f api/Dockerfile \
+            -t "${ECR_REGISTRY}/service-ticket-api:${IMAGE_TAG}" \
+            .
+
+      - name: Build frontend image
+        run: |
+          docker build \
+            -f frontend/Dockerfile \
+            -t "${ECR_REGISTRY}/service-ticket-frontend:${IMAGE_TAG}" \
+            frontend
+
+      - name: Build train image
+        run: |
+          docker build \
+            -f ml/Dockerfile \
+            -t "${ECR_REGISTRY}/service-ticket-train:${IMAGE_TAG}" \
+            .
+
+      - name: Build insert image
+        run: |
+          docker build \
+            -f rag/Dockerfile \
+            -t "${ECR_REGISTRY}/service-ticket-insert:${IMAGE_TAG}" \
+            .
+
+      - name: Build retrain image
+        run: |
+          docker build \
+            -f retrain/Dockerfile \
+            -t "${ECR_REGISTRY}/service-ticket-retrain:${IMAGE_TAG}" \
+            .
+
+      - name: Push images
+        run: |
+          set -euo pipefail
+
+          docker push "${ECR_REGISTRY}/service-ticket-api:${IMAGE_TAG}"
+          docker push "${ECR_REGISTRY}/service-ticket-frontend:${IMAGE_TAG}"
+          docker push "${ECR_REGISTRY}/service-ticket-train:${IMAGE_TAG}"
+          docker push "${ECR_REGISTRY}/service-ticket-insert:${IMAGE_TAG}"
+          docker push "${ECR_REGISTRY}/service-ticket-retrain:${IMAGE_TAG}"
+
+      - name: Show published images
+        run: |
+          echo "Published image tag: ${IMAGE_TAG}"
+
+          aws ecr describe-images \
+            --repository-name service-ticket-api \
+            --query 'imageDetails[].imageTags' \
+            --output json
