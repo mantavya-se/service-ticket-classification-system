@@ -1,0 +1,40 @@
+name: Verify Deployment Runner
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: arc-runner-set
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check installed tools
+        run: |
+          set -euo pipefail
+
+          aws --version
+          docker --version
+          kubectl version --client
+          terraform version
+
+      - name: Verify AWS identity
+        run: |
+          aws sts get-caller-identity
+
+      - name: Configure EKS access
+        run: |
+          aws eks update-kubeconfig \
+            --region us-east-1 \
+            --name service-ticket-cluster
+
+      - name: Verify Kubernetes access
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+          kubectl get pods -A
