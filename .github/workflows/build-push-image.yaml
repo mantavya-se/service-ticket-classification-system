@@ -42,8 +42,11 @@ jobs:
             .
 
       - name: Build frontend image
+        env:
+          BUILDX_NO_DEFAULT_ATTESTATIONS: "1"
         run: |
           docker build \
+            --provenance=false \
             -f frontend/Dockerfile \
             -t "${ECR_REGISTRY}/service-ticket-frontend:${IMAGE_TAG}" \
             frontend
