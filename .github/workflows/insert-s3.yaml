@@ -1,0 +1,72 @@
+name: Insert Application Data
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    runs-on: arc-runner-set
+
+    env:
+      AWS_REGION: us-east-1
+      S3_BUCKET_NAME: service-ticket-data-835577334660
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify expected files
+        run: |
+          set -euo pipefail
+
+          test -f data/public_it_tickets.csv
+          test -f data/synthetic_tickets.csv
+          test -f combined_ticket.csv
+          test -d knowledge_base
+          test -d models
+
+      - name: Upload datasets
+        run: |
+          set -euo pipefail
+
+          aws s3 cp \
+            data/public_it_tickets.csv \
+            "s3://${S3_BUCKET_NAME}/datasets/raw/public-it-tickets.csv"
+
+          aws s3 cp \
+            data/synthetic_tickets.csv \
+            "s3://${S3_BUCKET_NAME}/datasets/raw/synthetic-tickets.csv"
+
+          aws s3 cp \
+            data/combined_ticket.csv \
+            "s3://${S3_BUCKET_NAME}/datasets/raw/combined-ticket.csv"
+
+      - name: Upload knowledge base
+        run: |
+          aws s3 sync \
+            knowledge_base/ \
+            "s3://${S3_BUCKET_NAME}/knowledge-base/" \
+            --exclude "*" \
+            --include "*.md"
+      
+      - name: Upload models
+        run: |
+          aws s3 sync \
+            models \
+            "s3://${S3_BUCKET_NAME}/models/"
+
+      - name: Verify S3 objects
+        run: |
+          aws s3 ls \
+            "s3://${S3_BUCKET_NAME}/datasets/raw/"
+
+          aws s3 ls \
+            "s3://${S3_BUCKET_NAME}/knowledge-base/" \
+            --recursive
+
+          aws s3 ls \
+            "s3://${S3_BUCKET_NAME}/models/" \
+            --recursive
