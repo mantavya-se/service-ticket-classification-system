@@ -1,0 +1,70 @@
+Ticket ID,Category,Subcategory,Priority,Description,Source
+1000001,Hardware,VP Office Display not working properly,High,When the TV in the VP office is connected to a laptop through the docking station the screen has streaks all over it and the image quality is not the best,Synthetic
+1000002,Security,Migrating Files from personal drive,Low,The user has work files stored on a personal storage device that need to be migrated to a temporary network drive to ensure they are retained.,Synthetic
+1000003,Hardware,Changing the position of the monitors,Low,User wanted to move the monitors to a different orientation however the power bar was not long enough to accommodate the new location.,Synthetic
+1000004,Access,Access to Estate Files,Medium,The estate files that were connected to my outlook is missing. Can someone please assist me with locating them?,Synthetic
+1000005,Network,Issues connecting to Eduroam,Low,User was having issues connecting to eduroam on their work phone.,Synthetic
+1000006,Software,Issues with Skype,Medium,User reported that none of their skype calls were going through and if someone else tried to call them then the caller would hear a hold tone and would not be able to get through to the user either.,Synthetic
+1000007,Software,Teams meeting attendees could not hear the user during the meeting,Medium,"User reported that during a Teams meeting, their microphone was unmuted but other participants were unable to hear them.",Synthetic
+1000008,Access,Accessing Advancement tracker,Medium,"Good morning, I'm trying to access Advancement Tracker but haven't been able as I'm getting 'Your connection isn't private'. I'm wondering if you might be able to help. Thank you,",Synthetic
+1000009,Hardware,Desktop screens not working,Medium,"My monitors stay in sleep mode, and they may need new wiring.",Synthetic
+1000010,Hardware,Monitors not working,Medium,User reported that their monitors were not working,Synthetic
+1000011,Hardware,Dell Latitude 7400 needs to be re-imaged,Low,"Hi, ADV200601 needs to be re-imaged. It needs a re-image as it is failing to update properly since transitioning from SCCM for updates to Intune with Windows Updates directly from Microsoft. ADV200601 info: Dell Latitude 7400 (HX1M533) NON DTR Many thanks,",Synthetic
+1000012,Hardware,New user Setup,Low,[Name] is new SDO on [Name] team. She starts on Thursday the 18th. I need someone to help set up her computer at 10:00. [Name] is on vacation.,Synthetic
+1000013,Access,Sync Issues,Medium,"I’m missing some subfolders this morning, I suspect OneDrive sync issues. Would I be able to get some help with that, please? :)",Synthetic
+1000014,Software,Display and loading issues,Medium,"I couldn't be on video, and even just on audio my computer was freezing. I tried hot spotting and going to a neighbors to use their internet - but that didn't seem to be the issue. l kept getting this alert - but the only apps I had open was chrome, outlook, loop, OneNote, word and teams - with nothing active happening on those tabs. Error message was displayed saying ""Your CPU is affecting your audio quality, close apps you aren't using.""",Synthetic
+1000015,Hardware,Setting up PAC printer,High,"User requested that the print in PAC 2834A be set up on the devices of [Name], [Name] and [Name].",Synthetic
+1000016,Hardware,Weird Monitor Aspect Ratio,Low,The aspect ratio for one of the user's monitor was stretched. Checked display settings and the resolution was at 1280 x 720 with no option to increase to 1920 x 1080.,Synthetic
+1000017,Software,Document configuration issues,Low,"Hi [Name], I can’t open the attachment properly. Could you try and send it back to me? Thanks so much. [Name]",Synthetic
+1000018,Network,User Unable to connect to wifi,High,User reported that they were unable to connect to external WiFi when working from home and were not able to connect to personal hotspot either.,Synthetic
+1000019,Hardware,Remove [location] printer from device,Critical,"A printer from another building was found to be installed on the user's device. The user's laptop, as well as the laptops of other staff members within the department, will be reviewed to ensure that only [location] printers are configured and that no printers from other locations have been added.",Synthetic
+1000020,Software,Notepad Remembering past files issue,Low,User wanted notepad to not reopen unfinished sessions when the app was started again and to open a fresh session each time.,Synthetic
+1000021,Hardware,Monitors not working and email signature help,Low,User reported that her monitors refused to connect to her laptop. She also needed help in setting up a signature on the Apple Mail app.,Synthetic
+1000022,Hardware,Intermittent chemical/plastic smell near workstation after monitor rewire,Low,"Since my monitor was rewired last week, I’ve intermittently noticed a marker-like / plastic smell around my cubicle, mainly near the monitor/dock/charging area. Could someone take a look at the setup to ensure nothing is overheating?",Synthetic
+1000023,Access,Issues logging in to RT,Medium,User is not able to log in to RT and keeps getting the error message that her password or login id is incorrect.,Synthetic
+1000024,Hardware,Setup Mac equipment - [Name],Low,"[Name] is currently using a personal laptop (mac) and one monitor. [Name] had indicated that [Name]would require a full setup (docking station, monitors, keyboard and mouse..). [Name] herself indicated that she would be starting a new role soon and would be getting a Dell laptop.",Synthetic
+1000025,Hardware,Dell D6000 Dock needed for dual display setup with MacBook,Low,Dell D6000 Dock needed to allow for use of dual display setup with MacBook according to ticket#149419,Synthetic
+1000026,Hardware,Workstation setup [location],Low,"Docking Stations: https://www.amazon.ca/Lenovo-ThinkPad-Hybrid-USB-C-40AF0135US/dp/B079N9BJY7
+Webcams: https://www.amazon.ca/Logitech-Calling-Correction-FaceTime-Hangouts/dp/B07K986YLL
+Wireless Keyboard/Mouse Combo: https://www.amazon.ca/dp/B079JLY5M5/coliid=I2CK7AFY459R6I&colid=27EV1DKS9FDN4&psc=1&ref_=list_c_wl_lv_ov_lig_dp_it
+DisplayPort Cables: https://www.amazon.ca/ivanky-DisplayPort-Braided-Display-Laptop",Synthetic
+1000027,Hardware,Setup Workstation in [location],Low,Setup required for shared workstation area in [location]. The room currently only has a monitor available. Additional peripherals and docking accessories are needed to make the space usable for users working in the room.,Synthetic
+1000028,Software,Teams access to shared and files missing,Medium,"Hi,
+I’ve rebooted etc., settings, etc. but in the past day or two, my ability to access “Shared” and “files” on my various channels is missing from view. Can someone please advise me as to what steps I need to take to restore this view/setting/or etc….? I can only see “POSTS” in all channels, not Shared. Note the red alert triangle relates to a prior issue (Dal team channel).
+It’s very limiting. I’m remote today, but can share my screen etc. See below.
+Thanks,
+[Name]",Synthetic
+1000029,Software,Computer Issues,Low,"Hi [Name], is it abnormal for Software Centre to consistently give notifications that installation(s) failed? In March, Lina mentioned my machine was ""not up to date in the way it should be"". Maybe it never figured itself out.
+Maybe or maybe not related: Recently (last week) I started experiencing an issue where applications would close on me. I thought it was when I would alt + tab, so I followed some suggestions.
+This happened with edge, so I tried chrome, and eventually it happened there as well. Today both Edge and Excel crashed and I got a install failure notification from Software Centre at the same time. Have you heard of anything like this, or have any suggestions? For this combination of app crashes, I see a suggestion to repair Microsoft Office. I tried to repair Microsoft 365 and it failed, which is not encouraging lol.",Synthetic
+1000030,Software,Unexpected Outlook and Browser behaviour,Medium,"User reported abnormal behavior on laptop. While using Outlook, sent emails unexpectedly moved to Deleted Items. Later, while using Edge, multiple random browser tabs opened unexpectedly.",Synthetic
+1000031,Hardware,Monitor connection inconsistent,Low,One of my monitors regularly loses its signal for no apparent reason. Sometimes I will be in the middle of a Teams call - using that monitor - and I suddenly won't be able to see anything. The other monitor is fine with no issues. It's the central monitor (with the webcam attached) that regularly goes black. This happens approximately 5 times/day.,Synthetic
+1000032,Software,Local Security Authority Warning Pop Ups,Low,Recurring warning pop-ups appearing after DYMO printer installation last week. Error message reads 'This module is blocked from loading into the Local Security Authority',Synthetic
+1000033,Software,Adobe PDF - Saving,Medium,"I am trying to save a email message as adobe pdf and I get now get the message ""Your request could not be completed. Adobe Acrobat license has either expired or not been activated. Try launching adobe acrobat"" I am not sure why this is happening when I use to be able to save. Can you help? thanks",Synthetic
+1000034,Software,Issues with autofilling passwords in browser and calender syncing,Low,The user was facing issues with the autofill passwords and auto sign in features in Google Chrome and wanted them to be disabled. The user was also facing calendar syncing issues between their iPhone calendar app and Outlook.,Synthetic
+1000035,Software,MS Visio Installation,Low,User requested installation of Microsoft Visio App on their laptop,Synthetic
+1000036,Hardware,Two Laptops needed for Campus Life Fair - Wednesday May 13,Medium,"Hi, [Name] (cc'd) and I need to borrow two laptops for the Campus Life Fair on Wednesday, May 13, 2026 (11:00 AM to 2:00 PM EDT). [Name] has already spoken to [Name] (cc'd) about this. Each laptop should be able to hold a charge for 3 to 4 hours since we won't have reliable power at the booth. We'd like to pick them up first thing Wednesday morning. Please let us know what we need to do to coordinate pickup. Thanks!",Synthetic
+1000037,Hardware,Laptop display not turning on,High,"The laptop display is not turning on at all, even when trying to access the BIOS/boot menu.",Synthetic
+1000038,Software,Issues with Teams and IPhone,Medium,"User reported that when attempting to start a call in Microsoft Teams, they received a “Sorry, we couldn’t connect you” error message. Additionally, when placing phone calls, the other person was unable to hear any audio from the user.",Synthetic
+1000039,Hardware,Web Cam,Low,My computer was never set up with a Web Cam - I am requesting a new Web Cam.,Synthetic
+1000040,Security,Update Laptop - ISV-4803 ADV200601: Windows Vulnerabilities,Medium,MacBook - IST Ticket: IST-245578,Synthetic
+1000041,Hardware,Software Update,Low,Needed Min Password,Synthetic
+1000042,Security,Updating unpatched computers,Low,"You know those tickets from IST security about stuff being unpatched? We have access to their info by API and am dumping it here: K:\RE-RaisersEdge-CTL\DEV\Data Extracts\IT\Results.txt
+[Name] has dumped the info into the text file. What we would like to do is find these machines and update them.
+Can you cross reference the info with AM (Asset Manager) and then reach out to the users to assess their machine please.",Synthetic
+1000043,Hardware,Research a setup for hybrid/remote meetings,Low,"One thing [Name] can work on is a complete overhaul of the setup in Discovery and Inspiration. She could visit other offices, like Office of Research and inquire with IST to see how best to come up with a proposal to support hybrid/remote meetings. Next would be Philanthropy. She can do the research and visit other buildings across campus.
+Something to consider is having a dedicated Teams Account associated with the TV/Computer.",Synthetic
+1000044,Software,Connect Issue - CPU Load,Low,"Hi there - I am having issues with connectivity in Teams in my office. I have received an error message: CPU load is affecting audio quality.
+Can someone provide some support - thank you!",Synthetic
+1000045,Network,Installing ethernet port in [location],Low,[Location] has no ethernet port. A ticket has been raised with IST for the installation of the same. Account number used is: [Account ID],Synthetic
+1000046,Access,Title change - [Name] - July 13 2026,Low,,Synthetic
+1000047,Access,Renew O365 License for External Users - Brightvine,Low,,Synthetic
+1000048,Access,O365 License expiring for several accounts,Low,,Synthetic
+1000049,Access,Research Funding Database Access,Low,,Synthetic
+1000050,Hardware,Headset not working - No Sound,Low,,Synthetic
+1000051,Software,Import missing GL attributes from RE to CRM (post conversion cleanup),Low,,Synthetic
+2000001,Software,Outlook will not load emails.,Low,I am not connected to the VPN could that be contributing?,Production
+20000002,Software,Issues with Outlook,Low,Outlook will not load my emails.,Production
+2000000,Hardware,Monitor Display not working,Low,Screen says no signal when the cable is connected,Production
+2000003,Network,Cannot connect to Duo Mobile,Low,I keep getting an authentication error.,Production
+2000005,Software,Issues with Adobe,Low,It keeps asking me to sign in.,Production

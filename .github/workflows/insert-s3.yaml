@@ -22,27 +22,16 @@ jobs:
         run: |
           set -euo pipefail
 
-          test -f data/public_it_tickets.csv
           test -f data/synthetic_tickets.csv
-          test -f combined_ticket.csv
           test -d knowledge_base
-          test -d models
 
       - name: Upload datasets
         run: |
           set -euo pipefail
 
           aws s3 cp \
-            data/public_it_tickets.csv \
-            "s3://${S3_BUCKET_NAME}/datasets/raw/public-it-tickets.csv"
-
-          aws s3 cp \
             data/synthetic_tickets.csv \
             "s3://${S3_BUCKET_NAME}/datasets/raw/synthetic-tickets.csv"
-
-          aws s3 cp \
-            data/combined_ticket.csv \
-            "s3://${S3_BUCKET_NAME}/datasets/raw/combined-ticket.csv"
 
       - name: Upload knowledge base
         run: |
@@ -51,12 +40,6 @@ jobs:
             "s3://${S3_BUCKET_NAME}/knowledge-base/" \
             --exclude "*" \
             --include "*.md"
-      
-      - name: Upload models
-        run: |
-          aws s3 sync \
-            models \
-            "s3://${S3_BUCKET_NAME}/models/"
 
       - name: Verify S3 objects
         run: |
@@ -65,8 +48,4 @@ jobs:
 
           aws s3 ls \
             "s3://${S3_BUCKET_NAME}/knowledge-base/" \
-            --recursive
-
-          aws s3 ls \
-            "s3://${S3_BUCKET_NAME}/models/" \
             --recursive
