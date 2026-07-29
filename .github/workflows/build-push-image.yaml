@@ -19,24 +19,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Clean Docker storage
-        run: |
-          set -euo pipefail
-
-          docker system df || true
-          docker builder prune -af || true
-          docker image prune -af || true
-          docker container prune -f || true
-
-          echo "After cleanup:"
-          docker system df || true
-          df -h
-
       - name: Verify AWS identity
         run: aws sts get-caller-identity
 
       - name: Log in to Amazon ECR
         run: |
+          set -euo pipefail
+
           aws ecr get-login-password \
             --region "${AWS_REGION}" |
           docker login \
@@ -45,72 +34,127 @@ jobs:
 
       - name: Set image tag
         run: |
-          echo "IMAGE_TAG=${GITHUB_SHA::12}" >> "$GITHUB_ENV"
+          echo "IMAGE_TAG=${GITHUB_SHA::12}-${GITHUB_RUN_NUMBER}" \
+            >> "$GITHUB_ENV"
 
-      - name: Build API image
+      - name: Build and push API image
         run: |
-          docker build \
-            -f app/Dockerfile \
-            -t "${ECR_REGISTRY}/service-ticket-api:${IMAGE_TAG}" \
-            .
+          set -euo pipefail
 
-      - name: Push API image
-        run: docker push "${ECR_REGISTRY}/service-ticket-api:${IMAGE_TAG}"
+          IMAGE="${ECR_REGISTRY}/service-ticket-api:${IMAGE_TAG}"
 
-      - name: Build frontend image
-        env:
-          BUILDX_NO_DEFAULT_ATTESTATIONS: "1"
-        run: |
           docker build \
             --provenance=false \
+            -f app/Dockerfile \
+            -t "${IMAGE}" \
+            .
+
+          docker push "${IMAGE}"
+
+          docker image rm "${IMAGE}" || true
+          docker builder prune -f || true
+
+          df -h
+          docker system df || true
+
+      - name: Build and push frontend image
+        run: |
+          set -euo pipefail
+
+          IMAGE="${ECR_REGISTRY}/service-ticket-frontend:${IMAGE_TAG}"
+
+          docker build \
+            --provenance=false \
+            --build-arg VITE_API_URL=/api \
             -f frontend/Dockerfile \
-            -t "${ECR_REGISTRY}/service-ticket-frontend:${IMAGE_TAG}" \
+            -t "${IMAGE}" \
             frontend
 
-      - name: Push frontend image
-        run: docker push "${ECR_REGISTRY}/service-ticket-frontend:${IMAGE_TAG}"
+          docker push "${IMAGE}"
 
-      - name: Build train image
+          docker image rm "${IMAGE}" || true
+          docker builder prune -f || true
+
+          df -h
+          docker system df || true
+
+      - name: Build and push train image
         run: |
+          set -euo pipefail
+
+          IMAGE="${ECR_REGISTRY}/service-ticket-train:${IMAGE_TAG}"
+
           docker build \
+            --provenance=false \
             -f ml/Dockerfile \
-            -t "${ECR_REGISTRY}/service-ticket-train:${IMAGE_TAG}" \
+            -t "${IMAGE}" \
             .
 
-      - name: Push train image
-        run: docker push "${ECR_REGISTRY}/service-ticket-train:${IMAGE_TAG}"
+          docker push "${IMAGE}"
 
-      - name: Build insert image
+          docker image rm "${IMAGE}" || true
+          docker builder prune -f || true
+
+          df -h
+          docker system df || true
+
+      - name: Build and push insert image
         run: |
+          set -euo pipefail
+
+          IMAGE="${ECR_REGISTRY}/service-ticket-insert:${IMAGE_TAG}"
+
           docker build \
+            --provenance=false \
             -f rag/Dockerfile \
-            -t "${ECR_REGISTRY}/service-ticket-insert:${IMAGE_TAG}" \
+            -t "${IMAGE}" \
             .
 
-      - name: Push insert image
-        run: docker push "${ECR_REGISTRY}/service-ticket-insert:${IMAGE_TAG}"
+          docker push "${IMAGE}"
 
-      - name: Build retrain image
+          docker image rm "${IMAGE}" || true
+          docker builder prune -f || true
+
+          df -h
+          docker system df || true
+
+      - name: Build and push retrain image
         run: |
+          set -euo pipefail
+
+          IMAGE="${ECR_REGISTRY}/service-ticket-retrain:${IMAGE_TAG}"
+
           docker build \
+            --provenance=false \
             -f retrain/Dockerfile \
-            -t "${ECR_REGISTRY}/service-ticket-retrain:${IMAGE_TAG}" \
+            -t "${IMAGE}" \
             .
 
-      - name: Push retrain image
-        run: docker push "${ECR_REGISTRY}/service-ticket-retrain:${IMAGE_TAG}"
-        
+          docker push "${IMAGE}"
+
+          docker image rm "${IMAGE}" || true
+          docker builder prune -f || true
+
+          df -h
+          docker system df || true
+
       - name: Show published images
         run: |
+          set -euo pipefail
+
           echo "Published image tag: ${IMAGE_TAG}"
 
-          aws ecr describe-images \
-            --repository-name service-ticket-api \
-            --query 'imageDetails[].imageTags' \
-            --output json
+          for repository in \
+            service-ticket-api \
+            service-ticket-frontend \
+            service-ticket-train \
+            service-ticket-insert \
+            service-ticket-retrain
+          do
+            echo "Images in ${repository}:"
 
-      - name: Clean Docker after build
-        if: always()
-        run: |
-          docker builder prune -af || true
-          docker image prune -af || true
+            aws ecr describe-images \
+              --repository-name "${repository}" \
+              --query 'imageDetails[].imageTags' \
+              --output json
+          done
