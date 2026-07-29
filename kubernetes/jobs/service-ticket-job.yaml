@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: service-ticket-job
+  namespace: service-ticket
+  labels:
+    app.kubernetes.io/name: service-ticket-job
+    app.kubernetes.io/part-of: service-ticket-classifier
+
+automountServiceAccountToken: false

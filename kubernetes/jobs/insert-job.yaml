@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: service-ticket-insert
+  namespace: service-ticket
+
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 3600
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: service-ticket-insert
+        app.kubernetes.io/component: insert
+        app.kubernetes.io/part-of: service-ticket-classifier
+
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: service-ticket-job
+      containers:
+      - name: insert
+        image: insert-ecr-url
+        imagePullPolicy: IfNotPresent
+        command: ["python3", "-m", "rag.init"]
+      
+        envFrom:
+        - configMapRef:
+            name: service-ticket-job-config
+        - secretRef:
+            name: service-ticket-db-secret
+
+        resources:
+          requests:
+              cpu: "250m"
+              memory: "512Mi"
+          limits:
+            cpu: "1"
+            memory: "2Gi"
