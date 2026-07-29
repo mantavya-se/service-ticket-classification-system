@@ -1,0 +1,67 @@
+name: Deploy Application
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Image tag pushed to ECR
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: service-ticket-cluster
+  ECR_REGISTRY: 835577334660.dkr.ecr.us-east-1.amazonaws.com
+  IMAGE_TAG: ${{ inputs.image_tag }}
+
+jobs:
+  deploy:
+    runs-on: arc-runner-set
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Configure EKS access
+        run: |
+          set -euo pipefail
+
+          aws eks update-kubeconfig \
+            --region "${AWS_REGION}" \
+            --name "${EKS_CLUSTER_NAME}"
+
+          kubectl get nodes
+      
+      - name: Apply namespace
+        run: |
+          kubectl apply -f kubernetes/namespace.yaml
+
+      - name: Apply service accounts
+        run: |
+          kubectl apply -f kubernetes/api/service-account.yaml
+          kubectl apply -f kubernetes/jobs/service-ticket-job.yaml
+      
+      - name: Create Database secret
+        run: |
+          kubectl create secret generic service-ticket-db-secret \
+            --namespace service-ticket \
+            --from-literal=DB_USER="${{ secrets.DB_USER }}" \
+            --from-literal=DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            --dry-run=client \
+            -o yaml |
+          kubectl apply -f -
+      
+      - name: Prepare manifests
+        run: |
+          set -euo pipefail
+
+          sed -i \
+            "s|REPLACE_WITH_IMAGE_TAG|${IMAGE_TAG}|g" \
+            kubernetes/kustomization.yaml
+        
+      - name: Preview kustomize
+        run: |
+          kubectl kustomize kubernetes/
