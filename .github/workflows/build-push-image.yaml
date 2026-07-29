@@ -37,7 +37,7 @@ jobs:
       - name: Build API image
         run: |
           docker build \
-            -f api/Dockerfile \
+            -f app/Dockerfile \
             -t "${ECR_REGISTRY}/service-ticket-api:${IMAGE_TAG}" \
             .
 
