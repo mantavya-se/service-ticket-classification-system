@@ -53,15 +53,66 @@ jobs:
             --dry-run=client \
             -o yaml |
           kubectl apply -f -
-      
-      - name: Prepare manifests
+
+      - name: Apply generated ConfigMaps
         run: |
           set -euo pipefail
 
-          sed -i \
-            "s|REPLACE_WITH_IMAGE_TAG|${IMAGE_TAG}|g" \
-            kubernetes/kustomization.yaml
-        
-      - name: Preview kustomize
+          kubectl kustomize kubernetes/ > /tmp/rendered.yaml
+
+          awk '
+            BEGIN { RS="---"; ORS="---\n" }
+            /kind: ConfigMap/ { print }
+          ' /tmp/rendered.yaml |
+          kubectl apply -f -
+
+      - name: Prepare Train Job
         run: |
-          kubectl kustomize kubernetes/
+          set -euo pipefail
+
+          cp kubernetes/jobs/train-job.yaml /tmp/train-job.yaml
+
+          sed -i \
+            "s|train-ecr-url|${ECR_REGISTRY}/service-ticket-train:${IMAGE_TAG}|g" \
+            /tmp/train-job.yaml
+
+          cat /tmp/train-job.yaml
+
+      - name: Run Train Job
+        run: |
+          set -euo pipefail
+
+          kubectl delete job service-ticket-train \
+            --namespace service-ticket \
+            --ignore-not-found
+
+          kubectl apply -f /tmp/train-job.yaml
+
+          kubectl wait \
+            --namespace service-ticket \
+            --for=condition=complete \
+            job/service-ticket-train \
+            --timeout=30m
+
+      - name: Show Train Job logs
+        if: always()
+        run: |
+          kubectl logs \
+            --namespace service-ticket \
+            job/service-ticket-train \
+            --all-containers=true || true
+
+          kubectl describe job \
+            service-ticket-train \
+            --namespace service-ticket || true
+
+          kubectl get pods \
+            --namespace service-ticket || true
+
+      - name: Verify production model in S3
+        run: |
+          aws s3api head-object \
+            --bucket service-ticket-data-835577334660 \
+            --key models/production/ticket-classifier.joblib
+
+          echo "Production model successfully uploaded to S3"
