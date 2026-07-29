@@ -6,7 +6,7 @@ def validate(DATA_FILE, OUTPUT_FILE):
     EXPECTED_COLUMNS = ["Ticket ID", "Category", "Subcategory", "Priority", "Description", "Source"]
     VALID_CATEGORIES = {"Hardware", "Software", "Access", "Security", "Network"}
     VALID_PRIORITIES = {"Low" ,"Medium", "High", "Critical"}
-    VALID_SOURCES = {"Public", "Synthetic"}
+    VALID_SOURCES = {"Public", "Synthetic", "Production"}
 
     EMAIL_RE = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
     PHONE_RE = r"(\+?\d{1,3}[\s.-]?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}"
@@ -66,6 +66,7 @@ def validate(DATA_FILE, OUTPUT_FILE):
     print_results(error, warning, OUTPUT_FILE)
 
 def print_results(errors, warnings, OUTPUT_FILE):
+    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(OUTPUT_FILE, "w") as file:
         file.write("")
         file.write("Validation Results\n")
@@ -87,6 +88,6 @@ def print_results(errors, warnings, OUTPUT_FILE):
 
 if __name__ == "__main__":
     validate(
-        DATA_FILE = Path("/app/data/synthetic_tickets.csv"),
-        OUTPUT_FILE = Path("/app/data/validation_output.txt")
+        DATA_FILE=Path("/tmp/data/synthetic_tickets.csv"),
+        OUTPUT_FILE=Path("/tmp/data/validation_output.txt"),
     )
