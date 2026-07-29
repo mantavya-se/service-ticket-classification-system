@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-ticket-frontend
+  namespace: service-ticket
+  labels:
+    app.kubernetes.io/name: service-ticket-frontend
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: service-ticket-classifier
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: service-ticket-frontend
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: service-ticket-frontend
+        app.kubernetes.io/component: frontend
+        app.kubernetes.io/part-of: service-ticket-classifier
+    spec:
+      containers:
+      - name: frontend
+        image: frontend-ecr-url
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+
+        readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+
+        resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+
