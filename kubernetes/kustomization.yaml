@@ -59,6 +59,9 @@ configMapGenerator:
 
       - RETRAIN_MIN_RECORDS=5
 
+generatorOptions:
+  disableNameSuffixHash: true
+
 images:
   - name: api-ecr-url
     newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api
