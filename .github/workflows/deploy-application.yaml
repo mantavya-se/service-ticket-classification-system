@@ -92,22 +92,13 @@ jobs:
             --namespace service-ticket \
             --for=condition=complete \
             job/service-ticket-train \
-            --timeout=30m
-
-      - name: Show Train Job logs
-        if: always()
-        run: |
-          kubectl logs \
-            --namespace service-ticket \
-            job/service-ticket-train \
-            --all-containers=true || true
-
-          kubectl describe job \
-            service-ticket-train \
-            --namespace service-ticket || true
-
-          kubectl get pods \
-            --namespace service-ticket || true
+            --timeout=30m || {
+              echo "Training job failed or timed out"
+              kubectl describe job service-ticket-train -n service-ticket
+              kubectl get pods -n service-ticket -l job-name=service-ticket-train -o wide
+              kubectl logs -n service-ticket -l job-name=service-ticket-train --all-containers=true --tail=-1 || true
+              exit 1
+            }
 
       - name: Verify production model in S3
         run: |
