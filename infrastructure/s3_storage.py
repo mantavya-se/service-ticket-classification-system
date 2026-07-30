@@ -52,7 +52,7 @@ def download_folder(bucket: str, prefix: str, local_directory: str | Path) -> li
                 if key.endswith("/"):
                     continue
 
-                relative_key = key.remove_prefix(prefix).lstrip("/")
+                relative_key = key.removeprefix(prefix).lstrip("/")
                 local_path = destination / relative_key
                 local_path.parent.mkdir(parents=True, exist_ok=True)
 
