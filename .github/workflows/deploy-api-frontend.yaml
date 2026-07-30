@@ -62,13 +62,9 @@ jobs:
           rm -rf /tmp/service-ticket-kubernetes
           cp -R kubernetes /tmp/service-ticket-kubernetes
 
-          cd /tmp/service-ticket-kubernetes
-
-          kustomize edit set image \
-            "${ECR_REGISTRY}/service-ticket-api=${ECR_REGISTRY}/service-ticket-api:${IMAGE_TAG}"
-
-          kustomize edit set image \
-            "${ECR_REGISTRY}/service-ticket-frontend=${ECR_REGISTRY}/service-ticket-frontend:${IMAGE_TAG}"
+          sed -i \
+            "s|newTag: REPLACE_WITH_IMAGE_TAG|newTag: ${IMAGE_TAG}|g" \
+            /tmp/service-ticket-kubernetes/kustomization.yaml
 
       - name: Verify rendered manifests
         run: |
