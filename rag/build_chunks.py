@@ -128,7 +128,7 @@ def build_embeddings(local_directory: Path) -> list[dict]:
     return chunks
 
 
-def run_build_embeddings() -> None:
+def run_build_embeddings() -> list[dict]:
     bucket = os.environ["S3_BUCKET_NAME"]
     prefix = os.getenv(
         "KNOWLEDGE_BASE_PREFIX",
@@ -163,3 +163,5 @@ def run_build_embeddings() -> None:
     print(f"Subcategory: {first['subcategory']}")
     print(f"Section: {first['section']}")
     print(f"Embedding length: {len(first['embedding'])}")
+
+    return chunks
