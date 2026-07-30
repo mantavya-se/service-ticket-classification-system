@@ -13,5 +13,7 @@ RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/wh
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY rag/ ./rag/
+COPY infrastructure/s3_storage.py ./infrastructure/s3_storage.py
+COPY infrastructure/__init__.py ./infrastructure/__init__.py
 
 CMD ["python3", "-m", "rag.init"]
