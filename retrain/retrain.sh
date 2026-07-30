@@ -10,6 +10,6 @@ echo "Validating synthetic dataset"
 python3 -m retrain.validate
 
 echo "Uploading updated synthetic dataset to S3"
-python3 -m retrain.upload_outputs
+python3 -m retrain.upload_files
 
 echo "Retraining data update completed"
