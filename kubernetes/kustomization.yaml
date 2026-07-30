@@ -1,7 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: service-ticket
 
 resources:
+  - ingress-class.yaml
+  
   - api/api-deployment.yaml
   - api/api-service.yaml
   - api/service-account.yaml
@@ -9,13 +12,13 @@ resources:
   - frontend/frontend-deployment.yaml
   - frontend/frontend-service.yaml
 
-  - jobs/insert-job.yaml
-  - jobs/retrain-job.yaml
-  - jobs/service-ticket-job.yaml
-  - jobs/train-job.yaml
+  # - jobs/insert-job.yaml
+  # - jobs/retrain-job.yaml
+  # - jobs/service-ticket-job.yaml
+  # - jobs/train-job.yaml
 
   - ingress.yaml
-  - namespace.yaml
+  # - namespace.yaml
 
 configMapGenerator:
   - name: service-ticket-api-config
@@ -65,20 +68,20 @@ generatorOptions:
 images:
   - name: api-ecr-url
     newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api
-    newTag: REPLACE_WITH_IMAGE_TAG
+    newTag: 2aafa9ff13d4-12
   
   - name: frontend-ecr-url
     newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend
-    newTag: REPLACE_WITH_IMAGE_TAG
+    newTag: 2aafa9ff13d4-12
 
-  - name: insert-ecr-url
-    newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-insert
-    newTag: REPLACE_WITH_IMAGE_TAG
+  # - name: insert-ecr-url
+  #   newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-insert
+  #   newTag: REPLACE_WITH_IMAGE_TAG
 
-  - name: retrain-ecr-url
-    newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-retrain
-    newTag: REPLACE_WITH_IMAGE_TAG
+  # - name: retrain-ecr-url
+  #   newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-retrain
+  #   newTag: REPLACE_WITH_IMAGE_TAG
 
-  - name: train-ecr-url
-    newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-train
-    newTag: REPLACE_WITH_IMAGE_TAG
+  # - name: train-ecr-url
+  #   newName: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-train
+  #   newTag: REPLACE_WITH_IMAGE_TAG
