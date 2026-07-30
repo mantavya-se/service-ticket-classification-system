@@ -46,7 +46,7 @@ spec:
 
           startupProbe:
             httpGet:
-              path: /
+              path: /api/
               port: http
             periodSeconds: 5
             timeoutSeconds: 3
@@ -54,7 +54,7 @@ spec:
 
           readinessProbe:
             httpGet:
-              path: /
+              path: /api/
               port: http
             periodSeconds: 10
             timeoutSeconds: 3
@@ -63,7 +63,7 @@ spec:
 
           livenessProbe:
             httpGet:
-              path: /
+              path: /api/
               port: http
             initialDelaySeconds: 20
             periodSeconds: 20
