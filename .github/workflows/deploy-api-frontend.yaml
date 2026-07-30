@@ -1,0 +1,165 @@
+name: Deploy API and Frontend
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: ECR image tag to deploy
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: service-ticket-cluster
+  K8S_NAMESPACE: service-ticket
+  ECR_REGISTRY: 835577334660.dkr.ecr.us-east-1.amazonaws.com
+  IMAGE_TAG: ${{ inputs.image_tag }}
+
+jobs:
+  deploy:
+    name: Deploy API and Frontend
+    runs-on: arc-runner-set
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify AWS identity
+        run: |
+          set -euo pipefail
+          aws sts get-caller-identity
+
+      - name: Configure EKS access
+        run: |
+          set -euo pipefail
+
+          aws eks update-kubeconfig \
+            --region "${AWS_REGION}" \
+            --name "${EKS_CLUSTER_NAME}"
+
+          kubectl cluster-info
+          kubectl get namespace "${K8S_NAMESPACE}"
+
+      - name: Apply database secret
+        run: |
+          set -euo pipefail
+
+          kubectl create secret generic service-ticket-db-secret \
+            --namespace "${K8S_NAMESPACE}" \
+            --from-literal=DB_USER="${{ secrets.DB_USER }}" \
+            --from-literal=DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            --dry-run=client \
+            -o yaml |
+          kubectl apply -f -
+
+      - name: Prepare Kustomize deployment
+        run: |
+          set -euo pipefail
+
+          rm -rf /tmp/service-ticket-kubernetes
+          cp -R kubernetes /tmp/service-ticket-kubernetes
+
+          cd /tmp/service-ticket-kubernetes
+
+          kustomize edit set image \
+            "${ECR_REGISTRY}/service-ticket-api=${ECR_REGISTRY}/service-ticket-api:${IMAGE_TAG}"
+
+          kustomize edit set image \
+            "${ECR_REGISTRY}/service-ticket-frontend=${ECR_REGISTRY}/service-ticket-frontend:${IMAGE_TAG}"
+
+      - name: Verify rendered manifests
+        run: |
+          set -euo pipefail
+
+          kubectl kustomize /tmp/service-ticket-kubernetes \
+            > /tmp/service-ticket-application.yaml
+
+          echo "Images being deployed:"
+          grep -n "image:" /tmp/service-ticket-application.yaml
+
+      - name: Deploy application
+        run: |
+          set -euo pipefail
+
+          kubectl apply \
+            -k /tmp/service-ticket-kubernetes
+
+      - name: Wait for API rollout
+        run: |
+          set -euo pipefail
+
+          kubectl rollout status \
+            deployment/service-ticket-api \
+            --namespace "${K8S_NAMESPACE}" \
+            --timeout=15m
+
+      - name: Verify deployment
+        run: |
+          set -euo pipefail
+
+          kubectl get deployments \
+            --namespace "${K8S_NAMESPACE}"
+
+          kubectl get pods \
+            --namespace "${K8S_NAMESPACE}" \
+            -o wide
+
+          kubectl get services \
+            --namespace "${K8S_NAMESPACE}"
+
+          kubectl get ingress \
+            --namespace "${K8S_NAMESPACE}"
+
+          echo
+          echo "Deployed images:"
+
+          kubectl get deployment service-ticket-api \
+            --namespace "${K8S_NAMESPACE}" \
+            -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
+
+          kubectl get deployment service-ticket-frontend \
+            --namespace "${K8S_NAMESPACE}" \
+            -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
+
+      - name: Show diagnostics on failure
+        if: failure()
+        run: |
+          echo "Application resources:"
+          kubectl get deployments,pods,services,ingress \
+            --namespace "${K8S_NAMESPACE}" \
+            -o wide || true
+
+          echo
+          echo "API Deployment:"
+          kubectl describe deployment service-ticket-api \
+            --namespace "${K8S_NAMESPACE}" || true
+
+          echo
+          echo "Frontend Deployment:"
+          kubectl describe deployment service-ticket-frontend \
+            --namespace "${K8S_NAMESPACE}" || true
+
+          echo
+          echo "API logs:"
+          kubectl logs \
+            --namespace "${K8S_NAMESPACE}" \
+            --selector=app.kubernetes.io/name=service-ticket-api \
+            --all-containers=true \
+            --tail=200 || true
+
+          echo
+          echo "Frontend logs:"
+          kubectl logs \
+            --namespace "${K8S_NAMESPACE}" \
+            --selector=app.kubernetes.io/name=service-ticket-frontend \
+            --all-containers=true \
+            --tail=200 || true
+
+          echo
+          echo "Recent events:"
+          kubectl get events \
+            --namespace "${K8S_NAMESPACE}" \
+            --sort-by=.metadata.creationTimestamp || true
