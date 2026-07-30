@@ -47,7 +47,7 @@ def download_folder(bucket: str, prefix: str, local_directory: str | Path) -> li
 
         for page in pages:
             for item in page.get("Contents", []):
-                key = item["key"]
+                key = item["Key"]
 
                 if key.endswith("/"):
                     continue
