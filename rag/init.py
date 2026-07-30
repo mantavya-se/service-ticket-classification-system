@@ -6,7 +6,7 @@ from rag.build_chunks import run_build_embeddings
 
 load_dotenv()
 
-chunks = run_build_embeddings
+chunks = run_build_embeddings()
 
 def get_connection():
     return psycopg2.connect(
