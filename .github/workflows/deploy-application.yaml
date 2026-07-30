@@ -100,10 +100,36 @@ jobs:
               exit 1
             }
 
-      - name: Verify production model in S3
+      - name: Prepare Insert Job
         run: |
-          aws s3api head-object \
-            --bucket service-ticket-data-835577334660 \
-            --key models/production/ticket-classifier.joblib
+          set -euo pipefail
 
-          echo "Production model successfully uploaded to S3"
+          cp kubernetes/jobs/insert-job.yaml /tmp/insert-job.yaml
+
+          sed -i \
+            "s|insert-ecr-url|${ECR_REGISTRY}/service-ticket-insert:${IMAGE_TAG}|g" \
+            /tmp/insert-job.yaml
+
+      - name: Run Insert Job
+        run: |
+          set -euo pipefail
+
+          kubectl delete job service-ticket-insert \
+            --namespace service-ticket \
+            --ignore-not-found
+
+          kubectl apply -f /tmp/insert-job.yaml
+
+          kubectl wait \
+            --namespace service-ticket \
+            --for=condition=complete \
+            job/service-ticket-insert \
+            --timeout=30m
+
+      - name: Show Insert Job logs
+        if: always()
+        run: |
+          kubectl logs \
+            --namespace service-ticket \
+            --selector=job-name=service-ticket-insert \
+            --all-containers=true || true
