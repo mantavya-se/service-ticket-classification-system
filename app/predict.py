@@ -1,6 +1,7 @@
 import joblib
 from pathlib import Path
 from infrastructure.s3_storage import download_file
+import os
 
 # BASE_DIR = Path(__file__).resolve().parent.parent
 # MODEL_PATH = BASE_DIR / "models" / "ticket_classifier_split_v1.joblib"
