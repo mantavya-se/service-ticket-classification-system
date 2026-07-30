@@ -1,0 +1,232 @@
+name: Retrain Model
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: ECR tag for the retrain image
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: service-ticket-cluster
+  K8S_NAMESPACE: service-ticket
+  ECR_REGISTRY: 835577334660.dkr.ecr.us-east-1.amazonaws.com
+  S3_BUCKET_NAME: service-ticket-data-835577334660
+  MODEL_PRODUCTION_KEY: models/production/ticket-classifier.joblib
+  IMAGE_TAG: ${{ inputs.image_tag }}
+
+jobs:
+  retrain:
+    name: Run Retraining Pipeline
+    runs-on: arc-runner-set
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify AWS identity
+        run: |
+          set -euo pipefail
+          aws sts get-caller-identity
+
+      - name: Configure EKS access
+        run: |
+          set -euo pipefail
+
+          aws eks update-kubeconfig \
+            --region "${AWS_REGION}" \
+            --name "${EKS_CLUSTER_NAME}"
+
+          kubectl cluster-info
+          kubectl get namespace "${K8S_NAMESPACE}"
+
+      - name: Apply Job ServiceAccount
+        run: |
+          set -euo pipefail
+
+          kubectl apply \
+            -f kubernetes/jobs/service-ticket-job.yaml
+
+      - name: Apply database secret
+        run: |
+          set -euo pipefail
+
+          kubectl create secret generic service-ticket-db-secret \
+            --namespace "${K8S_NAMESPACE}" \
+            --from-literal=DB_USER="${{ secrets.DB_USER }}" \
+            --from-literal=DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            --dry-run=client \
+            -o yaml |
+          kubectl apply -f -
+
+      - name: Apply generated ConfigMaps
+        run: |
+          set -euo pipefail
+
+          kubectl kustomize kubernetes \
+            > /tmp/rendered-kubernetes.yaml
+
+          awk '
+            BEGIN {
+              RS="---"
+              ORS="---\n"
+            }
+
+            /kind: ConfigMap/ {
+              print
+            }
+          ' /tmp/rendered-kubernetes.yaml \
+            > /tmp/configmaps.yaml
+
+          if ! grep -q "service-ticket-job-config" /tmp/configmaps.yaml; then
+            echo "service-ticket-job-config was not rendered."
+            exit 1
+          fi
+
+          kubectl apply -f /tmp/configmaps.yaml
+
+      - name: Prepare Retrain Job
+        run: |
+          set -euo pipefail
+
+          cp \
+            kubernetes/jobs/retrain-job.yaml \
+            /tmp/retrain-job.yaml
+
+          sed -i \
+            "s|retrain-ecr-url|${ECR_REGISTRY}/service-ticket-retrain:${IMAGE_TAG}|g" \
+            /tmp/retrain-job.yaml
+
+          if grep -q "retrain-ecr-url" /tmp/retrain-job.yaml; then
+            echo "Retrain image placeholder was not replaced."
+            exit 1
+          fi
+
+          echo "Prepared Retrain Job:"
+          grep -nE \
+            "name:|image:|serviceAccountName:|configMapRef:|secretRef:" \
+            /tmp/retrain-job.yaml
+
+      - name: Run Retrain Job
+        run: |
+          set -euo pipefail
+
+          kubectl delete job service-ticket-retrain \
+            --namespace "${K8S_NAMESPACE}" \
+            --ignore-not-found
+
+          kubectl apply -f /tmp/retrain-job.yaml
+
+          for attempt in $(seq 1 180); do
+            COMPLETE="$(
+              kubectl get job service-ticket-retrain \
+                --namespace "${K8S_NAMESPACE}" \
+                -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' \
+                2>/dev/null || true
+            )"
+
+            FAILED="$(
+              kubectl get job service-ticket-retrain \
+                --namespace "${K8S_NAMESPACE}" \
+                -o jsonpath='{.status.conditions[?(@.type=="Failed")].status}' \
+                2>/dev/null || true
+            )"
+
+            echo \
+              "Retrain status: complete=${COMPLETE:-False}, failed=${FAILED:-False}"
+
+            if [ "${COMPLETE}" = "True" ]; then
+              echo "Retrain Job completed successfully."
+              exit 0
+            fi
+
+            if [ "${FAILED}" = "True" ]; then
+              echo "Retrain Job failed."
+
+              kubectl describe job service-ticket-retrain \
+                --namespace "${K8S_NAMESPACE}" || true
+
+              kubectl logs \
+                --namespace "${K8S_NAMESPACE}" \
+                --selector=job-name=service-ticket-retrain \
+                --all-containers=true \
+                --tail=300 || true
+
+              exit 1
+            fi
+
+            sleep 10
+          done
+
+          echo "Timed out waiting for Retrain Job."
+          exit 1
+
+      - name: Show Retrain Job logs
+        if: always()
+        run: |
+          kubectl logs \
+            --namespace "${K8S_NAMESPACE}" \
+            --selector=job-name=service-ticket-retrain \
+            --all-containers=true \
+            --tail=300 || true
+
+      - name: Restart API to load retrained model
+        run: |
+          set -euo pipefail
+
+          kubectl rollout restart \
+            deployment/service-ticket-api \
+            --namespace "${K8S_NAMESPACE}"
+
+          kubectl rollout status \
+            deployment/service-ticket-api \
+            --namespace "${K8S_NAMESPACE}" \
+            --timeout=15m
+
+      - name: Verify API after retraining
+        run: |
+          set -euo pipefail
+
+          kubectl get pods \
+            --namespace "${K8S_NAMESPACE}" \
+            --selector=app.kubernetes.io/name=service-ticket-api \
+            -o wide
+
+          kubectl logs \
+            --namespace "${K8S_NAMESPACE}" \
+            --selector=app.kubernetes.io/name=service-ticket-api \
+            --all-containers=true \
+            --tail=100
+
+      - name: Show diagnostics on failure
+        if: failure()
+        run: |
+          echo "Retrain Job:"
+          kubectl describe job service-ticket-retrain \
+            --namespace "${K8S_NAMESPACE}" || true
+
+          echo
+          echo "Retrain pods:"
+          kubectl get pods \
+            --namespace "${K8S_NAMESPACE}" \
+            --selector=job-name=service-ticket-retrain \
+            -o wide || true
+
+          echo
+          echo "Retrain logs:"
+          kubectl logs \
+            --namespace "${K8S_NAMESPACE}" \
+            --selector=job-name=service-ticket-retrain \
+            --all-containers=true \
+            --tail=300 || true
+
+          echo
+          echo "Recent events:"
+          kubectl get events \
+            --namespace "${K8S_NAMESPACE}" \
+            --sort-by=.metadata.creationTimestamp || true
