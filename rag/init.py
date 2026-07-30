@@ -2,11 +2,11 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 from pgvector.psycopg2 import register_vector
-from rag.build_chunks import build_embeddings
+from rag.build_chunks import run_build_embeddings
 
 load_dotenv()
 
-chunks = build_embeddings()
+chunks = run_build_embeddings
 
 def get_connection():
     return psycopg2.connect(
