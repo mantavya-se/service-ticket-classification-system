@@ -1,0 +1,278 @@
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: service-ticket-api
+    app.kubernetes.io/part-of: service-ticket-classifier
+  name: service-ticket-api
+  namespace: service-ticket
+---
+apiVersion: v1
+data:
+  AWS_REGION: us-east-1
+  DB_HOST: service-tickets.ce7o8kaymho2.us-east-1.rds.amazonaws.com
+  DB_NAME: service_tickets
+  DB_PORT: "5432"
+  DB_SSLMODE: require
+  LOG_LEVEL: INFO
+  MODEL_LOCAL_PATH: /tmp/ticket-classifier.joblib
+  MODEL_S3_BUCKET: service-ticket-data-835577334660
+  MODEL_S3_KEY: models/production/ticket-classifier.joblib
+kind: ConfigMap
+metadata:
+  name: service-ticket-api-config
+  namespace: service-ticket
+---
+apiVersion: v1
+data:
+  AWS_REGION: us-east-1
+  COMBINED_DATASET_KEY: datasets/processed/combined-tickets.csv
+  DATASET_VERSIONS_PREFIX: datasets/versions/
+  DB_HOST: service-tickets.ce7o8kaymho2.us-east-1.rds.amazonaws.com
+  DB_NAME: service_tickets
+  DB_PORT: "5432"
+  DB_SSLMODE: require
+  KNOWLEDGE_BASE_PREFIX: knowledge-base/
+  LOCAL_DATA_DIR: /tmp/data
+  LOCAL_KB_DIR: /tmp/knowledge-base
+  LOCAL_MODEL_DIR: /tmp/models
+  MODEL_PRODUCTION_KEY: models/production/ticket-classifier.joblib
+  MODEL_VERSIONS_PREFIX: models/versions/
+  PUBLIC_DATASET_KEY: datasets/raw/public-it-tickets.csv
+  RETRAIN_MIN_RECORDS: "5"
+  S3_BUCKET_NAME: service-ticket-data-835577334660
+  SYNTHETIC_DATASET_KEY: datasets/raw/synthetic-tickets.csv
+  VALIDATION_REPORTS_PREFIX: reports/validation/
+kind: ConfigMap
+metadata:
+  name: service-ticket-job-config
+  namespace: service-ticket
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: api
+    app.kubernetes.io/name: service-ticket-api
+    app.kubernetes.io/part-of: service-ticket-classifier
+  name: service-ticket-api
+  namespace: service-ticket
+spec:
+  ports:
+  - name: http
+    port: 8000
+    protocol: TCP
+    targetPort: http
+  selector:
+    app.kubernetes.io/name: service-ticket-api
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/name: service-ticket-frontend
+    app.kubernetes.io/part-of: service-ticket-classifier
+  name: service-ticket-frontend
+  namespace: service-ticket
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app.kubernetes.io/name: service-ticket-frontend
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: api
+    app.kubernetes.io/name: service-ticket-api
+    app.kubernetes.io/part-of: service-ticket-classifier
+  name: service-ticket-api
+  namespace: service-ticket
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: service-ticket-api
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: api
+        app.kubernetes.io/name: service-ticket-api
+        app.kubernetes.io/part-of: service-ticket-classifier
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: service-ticket-api-config
+        - secretRef:
+            name: service-ticket-db-secret
+        image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api:2aafa9ff13d4-12
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/
+            port: http
+          initialDelaySeconds: 20
+          periodSeconds: 20
+          timeoutSeconds: 3
+        name: api
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/
+            port: http
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 10001
+        startupProbe:
+          failureThreshold: 30
+          httpGet:
+            path: /api/
+            port: http
+          periodSeconds: 5
+          timeoutSeconds: 3
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: service-ticket-api
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/name: service-ticket-frontend
+    app.kubernetes.io/part-of: service-ticket-classifier
+  name: service-ticket-frontend
+  namespace: service-ticket
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: service-ticket-frontend
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: frontend
+        app.kubernetes.io/name: service-ticket-frontend
+        app.kubernetes.io/part-of: service-ticket-classifier
+    spec:
+      containers:
+      - image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend:2aafa9ff13d4-12
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+        name: frontend
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+        resources:
+          limits:
+            cpu: 250m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+---
+apiVersion: eks.amazonaws.com/v1
+kind: IngressClassParams
+metadata:
+  name: alb
+  namespace: service-ticket
+spec:
+  scheme: internet-facing
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+  name: service-ticket-ingress
+  namespace: service-ticket
+spec:
+  ingressClassName: alb
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: service-ticket-api
+            port:
+              number: 8000
+        path: /api
+        pathType: Prefix
+      - backend:
+          service:
+            name: service-ticket-frontend
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: alb
+spec:
+  controller: eks.amazonaws.com/alb
+  parameters:
+    apiGroup: eks.amazonaws.com
+    kind: IngressClassParams
+    name: alb

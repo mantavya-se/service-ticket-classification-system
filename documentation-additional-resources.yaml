@@ -1,0 +1,167 @@
+apiVersion: v1
+items:
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"alb.ingress.kubernetes.io/scheme":"internet-facing","alb.ingress.kubernetes.io/target-type":"ip"},"name":"service-ticket-ingress","namespace":"service-ticket"},"spec":{"ingressClassName":"alb","rules":[{"http":{"paths":[{"backend":{"service":{"name":"service-ticket-api","port":{"number":8000}}},"path":"/api","pathType":"Prefix"},{"backend":{"service":{"name":"service-ticket-frontend","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}]}}
+    creationTimestamp: "2026-07-30T15:26:03Z"
+    finalizers:
+    - ingress.eks.amazonaws.com/resources
+    generation: 1
+    name: service-ticket-ingress
+    namespace: service-ticket
+    resourceVersion: "453436"
+    uid: 4ff02c28-7589-4071-96e4-9cf79e5bdc95
+  spec:
+    ingressClassName: alb
+    rules:
+    - http:
+        paths:
+        - backend:
+            service:
+              name: service-ticket-api
+              port:
+                number: 8000
+          path: /api
+          pathType: Prefix
+        - backend:
+            service:
+              name: service-ticket-frontend
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+  status:
+    loadBalancer:
+      ingress:
+      - hostname: k8s-servicet-servicet-848db36c08-1909682212.us-east-1.elb.amazonaws.com
+- apiVersion: v1
+  data:
+    ca.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDBTCCAe2gAwIBAgIIPHzcQsuQnscwDQYJKoZIhvcNAQELBQAwFTETMBEGA1UE
+      AxMKa3ViZXJuZXRlczAeFw0yNjA3MjkxNzQzMjdaFw0zNjA3MjYxNzQ4MjdaMBUx
+      EzARBgNVBAMTCmt1YmVybmV0ZXMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+      AoIBAQDMFqSQpoYyqmIsgX/RWZ40aU53HFtTIs0BkabRLo72EGCPKNKaN+2SFU7h
+      jX3DlxlfGojOgI4ihHSmnrs6qkV/VdWFlhQZwNyO2tkMC+8pM8ECtppXKrW+efEI
+      6+47jltCvRcvbvmzETGbum9N2IXPvgW4dBn/7tYpn9oyBbOnrhlVt/Sa5Vlxr2wG
+      Tbl84Vb6exGPcFjTWYveaDeswEP9Xn1DQmsUXwHG8Z2hlA9lNQ4o5XGvf47WlC56
+      BwnnY/jA0F4rHjfo/NUO1J8W7ifEBKwAId3R36bzxAESHhJmQr9G/B3uX7dqJYud
+      9ARmAHBWAOj7im7vcehTH4CEfg5bAgMBAAGjWTBXMA4GA1UdDwEB/wQEAwICpDAP
+      BgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSdOy8V8a9I5efFM2xaoRCSt+JLzDAV
+      BgNVHREEDjAMggprdWJlcm5ldGVzMA0GCSqGSIb3DQEBCwUAA4IBAQBrmTItH47J
+      TjXDbMzmeFUBOwhCrKlvGQXziQN9QftA9wykQo4ZlBAprynGTonsPzy9RmO/ML7N
+      rTLj7U+DIRL0ue6/inTCELLKpqVtF+RHEd5auks1L5TLRSrMlVBiI97GZmvp4WE0
+      vDsf/LghjkaEl+27Oj6TwYBD+oAcfYwJOCQ/5y2Hsr/yYQh3m/0LpAuJjEya6Hsr
+      OrB1tLNOOvE0aKqoyUdMbnF/jlZ2PqpiN92/f2GZwM8bvLQCgkHTT1DcvqeBy4J/
+      SacIwmoDF/AtdkmliYDbRuHLkYuOs1qKnbgz87z07EL1qJbRx2VQPH07e9QhMWVG
+      pLOnolOk4zIU
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubernetes.io/description: Contains a CA bundle that can be used to verify the
+        kube-apiserver when using internal endpoints such as the internal service
+        IP or kubernetes.default.svc. No other usage is guaranteed across distributions
+        of Kubernetes clusters.
+    creationTimestamp: "2026-07-29T23:33:14Z"
+    name: kube-root-ca.crt
+    namespace: service-ticket
+    resourceVersion: "103470"
+    uid: fb62a00b-0c38-46e5-b56c-d048692ad455
+- apiVersion: v1
+  data:
+    AWS_REGION: us-east-1
+    DB_HOST: service-tickets.ce7o8kaymho2.us-east-1.rds.amazonaws.com
+    DB_NAME: service_tickets
+    DB_PORT: "5432"
+    DB_SSLMODE: require
+    LOG_LEVEL: INFO
+    MODEL_LOCAL_PATH: /tmp/ticket-classifier.joblib
+    MODEL_S3_BUCKET: service-ticket-data-835577334660
+    MODEL_S3_KEY: models/production/ticket-classifier.joblib
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","data":{"AWS_REGION":"us-east-1","DB_HOST":"service-tickets.ce7o8kaymho2.us-east-1.rds.amazonaws.com","DB_NAME":"service_tickets","DB_PORT":"5432","DB_SSLMODE":"require","LOG_LEVEL":"INFO","MODEL_LOCAL_PATH":"/tmp/ticket-classifier.joblib","MODEL_S3_BUCKET":"service-ticket-data-835577334660","MODEL_S3_KEY":"models/production/ticket-classifier.joblib"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"service-ticket-api-config","namespace":"service-ticket"}}
+    creationTimestamp: "2026-07-29T23:44:48Z"
+    name: service-ticket-api-config
+    namespace: service-ticket
+    resourceVersion: "106960"
+    uid: 06d21616-da6f-4945-a2b0-0e4a71540f53
+- apiVersion: v1
+  data:
+    AWS_REGION: us-east-1
+    COMBINED_DATASET_KEY: datasets/processed/combined-tickets.csv
+    DATASET_VERSIONS_PREFIX: datasets/versions/
+    DB_HOST: service-tickets.ce7o8kaymho2.us-east-1.rds.amazonaws.com
+    DB_NAME: service_tickets
+    DB_PORT: "5432"
+    DB_SSLMODE: require
+    KNOWLEDGE_BASE_PREFIX: knowledge-base/
+    LOCAL_DATA_DIR: /tmp/data
+    LOCAL_KB_DIR: /tmp/knowledge-base
+    LOCAL_MODEL_DIR: /tmp/models
+    MODEL_PRODUCTION_KEY: models/production/ticket-classifier.joblib
+    MODEL_VERSIONS_PREFIX: models/versions/
+    PUBLIC_DATASET_KEY: datasets/raw/public-it-tickets.csv
+    RETRAIN_MIN_RECORDS: "5"
+    S3_BUCKET_NAME: service-ticket-data-835577334660
+    SYNTHETIC_DATASET_KEY: datasets/raw/synthetic-tickets.csv
+    VALIDATION_REPORTS_PREFIX: reports/validation/
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","data":{"AWS_REGION":"us-east-1","COMBINED_DATASET_KEY":"datasets/processed/combined-tickets.csv","DATASET_VERSIONS_PREFIX":"datasets/versions/","DB_HOST":"service-tickets.ce7o8kaymho2.us-east-1.rds.amazonaws.com","DB_NAME":"service_tickets","DB_PORT":"5432","DB_SSLMODE":"require","KNOWLEDGE_BASE_PREFIX":"knowledge-base/","LOCAL_DATA_DIR":"/tmp/data","LOCAL_KB_DIR":"/tmp/knowledge-base","LOCAL_MODEL_DIR":"/tmp/models","MODEL_PRODUCTION_KEY":"models/production/ticket-classifier.joblib","MODEL_VERSIONS_PREFIX":"models/versions/","PUBLIC_DATASET_KEY":"datasets/raw/public-it-tickets.csv","RETRAIN_MIN_RECORDS":"5","S3_BUCKET_NAME":"service-ticket-data-835577334660","SYNTHETIC_DATASET_KEY":"datasets/raw/synthetic-tickets.csv","VALIDATION_REPORTS_PREFIX":"reports/validation/"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"service-ticket-job-config","namespace":"service-ticket"}}
+    creationTimestamp: "2026-07-29T23:44:48Z"
+    name: service-ticket-job-config
+    namespace: service-ticket
+    resourceVersion: "106961"
+    uid: 9f5562f4-eee4-4b54-8724-e7251d968310
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: "2026-07-29T23:33:14Z"
+    name: default
+    namespace: service-ticket
+    resourceVersion: "103471"
+    uid: 4dabd3d5-ca4e-49c1-85eb-828dd3cff8b5
+- apiVersion: v1
+  automountServiceAccountToken: true
+  kind: ServiceAccount
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","automountServiceAccountToken":true,"kind":"ServiceAccount","metadata":{"annotations":{},"labels":{"app.kubernetes.io/name":"service-ticket-api","app.kubernetes.io/part-of":"service-ticket-classifier"},"name":"service-ticket-api","namespace":"service-ticket"}}
+    creationTimestamp: "2026-07-29T23:33:15Z"
+    labels:
+      app.kubernetes.io/name: service-ticket-api
+      app.kubernetes.io/part-of: service-ticket-classifier
+    name: service-ticket-api
+    namespace: service-ticket
+    resourceVersion: "103475"
+    uid: dfa7baca-c107-4328-9c08-d39899b441b7
+- apiVersion: v1
+  automountServiceAccountToken: false
+  kind: ServiceAccount
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","automountServiceAccountToken":false,"kind":"ServiceAccount","metadata":{"annotations":{},"labels":{"app.kubernetes.io/name":"service-ticket-job","app.kubernetes.io/part-of":"service-ticket-classifier"},"name":"service-ticket-job","namespace":"service-ticket"}}
+    creationTimestamp: "2026-07-29T23:33:15Z"
+    labels:
+      app.kubernetes.io/name: service-ticket-job
+      app.kubernetes.io/part-of: service-ticket-classifier
+    name: service-ticket-job
+    namespace: service-ticket
+    resourceVersion: "103479"
+    uid: 384c3849-1afc-417d-a39a-8cd67deeebef
+kind: List
+metadata:
+  resourceVersion: ""

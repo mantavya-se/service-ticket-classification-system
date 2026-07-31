@@ -1,0 +1,1823 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/restartedAt: "2026-07-30T19:39:37Z"
+    creationTimestamp: "2026-07-31T13:15:06Z"
+    generateName: service-ticket-api-5d5b4f45c7-
+    generation: 1
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/name: service-ticket-api
+      app.kubernetes.io/part-of: service-ticket-classifier
+      eks.amazonaws.com/pod-identity: enabled
+      pod-template-hash: 5d5b4f45c7
+      topology.kubernetes.io/region: us-east-1
+      topology.kubernetes.io/zone: us-east-1a
+    name: service-ticket-api-5d5b4f45c7-f52kh
+    namespace: service-ticket
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: service-ticket-api-5d5b4f45c7
+      uid: acde1244-960d-4ae4-bb95-01885bb3217d
+    resourceVersion: "834005"
+    uid: 80a03dda-9322-4137-8dd6-f853e2cdf6a1
+  spec:
+    containers:
+    - env:
+      - name: AWS_STS_REGIONAL_ENDPOINTS
+        value: regional
+      - name: AWS_DEFAULT_REGION
+        value: us-east-1
+      - name: AWS_REGION
+        value: us-east-1
+      - name: AWS_CONTAINER_CREDENTIALS_FULL_URI
+        value: http://169.254.170.23/v1/credentials
+      - name: AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE
+        value: /var/run/secrets/pods.eks.amazonaws.com/serviceaccount/eks-pod-identity-token
+      envFrom:
+      - configMapRef:
+          name: service-ticket-api-config
+      - secretRef:
+          name: service-ticket-db-secret
+      image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api:2aafa9ff13d4-12
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /api/
+          port: http
+          scheme: HTTP
+        initialDelaySeconds: 20
+        periodSeconds: 20
+        successThreshold: 1
+        timeoutSeconds: 3
+      name: api
+      ports:
+      - containerPort: 8000
+        name: http
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /api/
+          port: http
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        limits:
+          cpu: "1"
+          memory: 1Gi
+        requests:
+          cpu: 250m
+          memory: 512Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        runAsNonRoot: true
+        runAsUser: 10001
+      startupProbe:
+        failureThreshold: 30
+        httpGet:
+          path: /api/
+          port: http
+          scheme: HTTP
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 3
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-x69xj
+        readOnly: true
+      - mountPath: /var/run/secrets/pods.eks.amazonaws.com/serviceaccount
+        name: eks-pod-identity-token
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: i-0cf7386c1d9d37684
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    serviceAccount: service-ticket-api
+    serviceAccountName: service-ticket-api
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: eks-pod-identity-token
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            audience: pods.eks.amazonaws.com
+            expirationSeconds: 79939
+            path: eks-pod-identity-token
+    - name: kube-api-access-x69xj
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:27Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:06Z"
+      observedGeneration: 1
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:42Z"
+      observedGeneration: 1
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:42Z"
+      observedGeneration: 1
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:06Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - allocatedResources:
+        cpu: 250m
+        memory: 512Mi
+      containerID: containerd://58cb7d9353be2762ab63d551cb3e1d7ea386850829e368f07860011a5eb49cbd
+      image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api:2aafa9ff13d4-12
+      imageID: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api@sha256:a07ebc29fd03b1d9da7023c8395cfbd6ee704b74d881855e3065c7ba119e8968
+      lastState: {}
+      name: api
+      ready: true
+      resources:
+        limits:
+          cpu: "1"
+          memory: 1Gi
+        requests:
+          cpu: 250m
+          memory: 512Mi
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2026-07-31T13:15:27Z"
+      user:
+        linux:
+          gid: 10001
+          supplementalGroups:
+          - 10001
+          uid: 10001
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-x69xj
+        readOnly: true
+        recursiveReadOnly: Disabled
+      - mountPath: /var/run/secrets/pods.eks.amazonaws.com/serviceaccount
+        name: eks-pod-identity-token
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 10.0.1.155
+    hostIPs:
+    - ip: 10.0.1.155
+    observedGeneration: 1
+    phase: Running
+    podIP: 10.0.1.97
+    podIPs:
+    - ip: 10.0.1.97
+    qosClass: Burstable
+    startTime: "2026-07-31T13:15:06Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/restartedAt: "2026-07-30T19:39:37Z"
+    creationTimestamp: "2026-07-31T13:15:06Z"
+    generateName: service-ticket-api-5d5b4f45c7-
+    generation: 1
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/name: service-ticket-api
+      app.kubernetes.io/part-of: service-ticket-classifier
+      eks.amazonaws.com/pod-identity: enabled
+      pod-template-hash: 5d5b4f45c7
+      topology.kubernetes.io/region: us-east-1
+      topology.kubernetes.io/zone: us-east-1a
+    name: service-ticket-api-5d5b4f45c7-rxbt6
+    namespace: service-ticket
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: service-ticket-api-5d5b4f45c7
+      uid: acde1244-960d-4ae4-bb95-01885bb3217d
+    resourceVersion: "833998"
+    uid: 07dcf8f5-7037-4eb8-abcc-dbd8fa2a5b26
+  spec:
+    containers:
+    - env:
+      - name: AWS_STS_REGIONAL_ENDPOINTS
+        value: regional
+      - name: AWS_DEFAULT_REGION
+        value: us-east-1
+      - name: AWS_REGION
+        value: us-east-1
+      - name: AWS_CONTAINER_CREDENTIALS_FULL_URI
+        value: http://169.254.170.23/v1/credentials
+      - name: AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE
+        value: /var/run/secrets/pods.eks.amazonaws.com/serviceaccount/eks-pod-identity-token
+      envFrom:
+      - configMapRef:
+          name: service-ticket-api-config
+      - secretRef:
+          name: service-ticket-db-secret
+      image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api:2aafa9ff13d4-12
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /api/
+          port: http
+          scheme: HTTP
+        initialDelaySeconds: 20
+        periodSeconds: 20
+        successThreshold: 1
+        timeoutSeconds: 3
+      name: api
+      ports:
+      - containerPort: 8000
+        name: http
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /api/
+          port: http
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        limits:
+          cpu: "1"
+          memory: 1Gi
+        requests:
+          cpu: 250m
+          memory: 512Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        runAsNonRoot: true
+        runAsUser: 10001
+      startupProbe:
+        failureThreshold: 30
+        httpGet:
+          path: /api/
+          port: http
+          scheme: HTTP
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 3
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-7nxcx
+        readOnly: true
+      - mountPath: /var/run/secrets/pods.eks.amazonaws.com/serviceaccount
+        name: eks-pod-identity-token
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: i-0cf7386c1d9d37684
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    serviceAccount: service-ticket-api
+    serviceAccountName: service-ticket-api
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: eks-pod-identity-token
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            audience: pods.eks.amazonaws.com
+            expirationSeconds: 83779
+            path: eks-pod-identity-token
+    - name: kube-api-access-7nxcx
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:27Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:06Z"
+      observedGeneration: 1
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:42Z"
+      observedGeneration: 1
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:42Z"
+      observedGeneration: 1
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:06Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - allocatedResources:
+        cpu: 250m
+        memory: 512Mi
+      containerID: containerd://4422e951bacb4f18eab941290d33424747c81920123e2a39d4e7588deb64e663
+      image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api:2aafa9ff13d4-12
+      imageID: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api@sha256:a07ebc29fd03b1d9da7023c8395cfbd6ee704b74d881855e3065c7ba119e8968
+      lastState: {}
+      name: api
+      ready: true
+      resources:
+        limits:
+          cpu: "1"
+          memory: 1Gi
+        requests:
+          cpu: 250m
+          memory: 512Mi
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2026-07-31T13:15:27Z"
+      user:
+        linux:
+          gid: 10001
+          supplementalGroups:
+          - 10001
+          uid: 10001
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-7nxcx
+        readOnly: true
+        recursiveReadOnly: Disabled
+      - mountPath: /var/run/secrets/pods.eks.amazonaws.com/serviceaccount
+        name: eks-pod-identity-token
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 10.0.1.155
+    hostIPs:
+    - ip: 10.0.1.155
+    observedGeneration: 1
+    phase: Running
+    podIP: 10.0.1.99
+    podIPs:
+    - ip: 10.0.1.99
+    qosClass: Burstable
+    startTime: "2026-07-31T13:15:06Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2026-07-31T13:15:06Z"
+    generateName: service-ticket-frontend-55f4556d89-
+    generation: 1
+    labels:
+      app.kubernetes.io/component: frontend
+      app.kubernetes.io/name: service-ticket-frontend
+      app.kubernetes.io/part-of: service-ticket-classifier
+      pod-template-hash: 55f4556d89
+      topology.kubernetes.io/region: us-east-1
+      topology.kubernetes.io/zone: us-east-1a
+    name: service-ticket-frontend-55f4556d89-pckts
+    namespace: service-ticket
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: service-ticket-frontend-55f4556d89
+      uid: cc179458-b922-47d1-ab5f-538d0e5ce66d
+    resourceVersion: "833922"
+    uid: a4cc02e4-1873-4b4e-b980-fc974b0ed82d
+  spec:
+    containers:
+    - image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend:2aafa9ff13d4-12
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /
+          port: http
+          scheme: HTTP
+        initialDelaySeconds: 20
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      name: frontend
+      ports:
+      - containerPort: 80
+        name: http
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: http
+          scheme: HTTP
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        limits:
+          cpu: 250m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-jzfkd
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: i-0cf7386c1d9d37684
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-jzfkd
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:18Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:06Z"
+      observedGeneration: 1
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:29Z"
+      observedGeneration: 1
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:29Z"
+      observedGeneration: 1
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:06Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - allocatedResources:
+        cpu: 50m
+        memory: 64Mi
+      containerID: containerd://1ff85d027aab3df78a858f46813edf21b5864c0b997355a4b00b83f86234c2b2
+      image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend:2aafa9ff13d4-12
+      imageID: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend@sha256:f9147397c3d1667f8bb69a6d0dc7649be855687f63ef716ddd334c4872eec778
+      lastState: {}
+      name: frontend
+      ready: true
+      resources:
+        limits:
+          cpu: 250m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2026-07-31T13:15:18Z"
+      user:
+        linux:
+          gid: 0
+          supplementalGroups:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 6
+          - 10
+          - 11
+          - 20
+          - 26
+          - 27
+          uid: 0
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-jzfkd
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 10.0.1.155
+    hostIPs:
+    - ip: 10.0.1.155
+    observedGeneration: 1
+    phase: Running
+    podIP: 10.0.1.96
+    podIPs:
+    - ip: 10.0.1.96
+    qosClass: Burstable
+    startTime: "2026-07-31T13:15:06Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2026-07-31T13:15:06Z"
+    generateName: service-ticket-frontend-55f4556d89-
+    generation: 1
+    labels:
+      app.kubernetes.io/component: frontend
+      app.kubernetes.io/name: service-ticket-frontend
+      app.kubernetes.io/part-of: service-ticket-classifier
+      pod-template-hash: 55f4556d89
+      topology.kubernetes.io/region: us-east-1
+      topology.kubernetes.io/zone: us-east-1a
+    name: service-ticket-frontend-55f4556d89-xqfsd
+    namespace: service-ticket
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: service-ticket-frontend-55f4556d89
+      uid: cc179458-b922-47d1-ab5f-538d0e5ce66d
+    resourceVersion: "833918"
+    uid: c417de63-5129-421b-92fd-e1fddf56c953
+  spec:
+    containers:
+    - image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend:2aafa9ff13d4-12
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /
+          port: http
+          scheme: HTTP
+        initialDelaySeconds: 20
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      name: frontend
+      ports:
+      - containerPort: 80
+        name: http
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: http
+          scheme: HTTP
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        limits:
+          cpu: 250m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-h99v8
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: i-0cf7386c1d9d37684
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-h99v8
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:18Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:06Z"
+      observedGeneration: 1
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:29Z"
+      observedGeneration: 1
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:29Z"
+      observedGeneration: 1
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-07-31T13:15:06Z"
+      observedGeneration: 1
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - allocatedResources:
+        cpu: 50m
+        memory: 64Mi
+      containerID: containerd://f6b601463c86137d8671b462fd5adcf7837e1829f476140c93e63d0b1f6ddecc
+      image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend:2aafa9ff13d4-12
+      imageID: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend@sha256:f9147397c3d1667f8bb69a6d0dc7649be855687f63ef716ddd334c4872eec778
+      lastState: {}
+      name: frontend
+      ready: true
+      resources:
+        limits:
+          cpu: 250m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2026-07-31T13:15:18Z"
+      user:
+        linux:
+          gid: 0
+          supplementalGroups:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 6
+          - 10
+          - 11
+          - 20
+          - 26
+          - 27
+          uid: 0
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-h99v8
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 10.0.1.155
+    hostIPs:
+    - ip: 10.0.1.155
+    observedGeneration: 1
+    phase: Running
+    podIP: 10.0.1.98
+    podIPs:
+    - ip: 10.0.1.98
+    qosClass: Burstable
+    startTime: "2026-07-31T13:15:06Z"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app.kubernetes.io/component":"api","app.kubernetes.io/name":"service-ticket-api","app.kubernetes.io/part-of":"service-ticket-classifier"},"name":"service-ticket-api","namespace":"service-ticket"},"spec":{"ports":[{"name":"http","port":8000,"protocol":"TCP","targetPort":"http"}],"selector":{"app.kubernetes.io/name":"service-ticket-api"},"type":"ClusterIP"}}
+    creationTimestamp: "2026-07-30T15:26:02Z"
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/name: service-ticket-api
+      app.kubernetes.io/part-of: service-ticket-classifier
+    name: service-ticket-api
+    namespace: service-ticket
+    resourceVersion: "392115"
+    uid: d8dc2b4b-c050-4d7a-b509-4341b980aac2
+  spec:
+    clusterIP: 172.20.149.71
+    clusterIPs:
+    - 172.20.149.71
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 8000
+      protocol: TCP
+      targetPort: http
+    selector:
+      app.kubernetes.io/name: service-ticket-api
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app.kubernetes.io/component":"frontend","app.kubernetes.io/name":"service-ticket-frontend","app.kubernetes.io/part-of":"service-ticket-classifier"},"name":"service-ticket-frontend","namespace":"service-ticket"},"spec":{"ports":[{"name":"http","port":80,"protocol":"TCP","targetPort":"http"}],"selector":{"app.kubernetes.io/name":"service-ticket-frontend"},"type":"ClusterIP"}}
+    creationTimestamp: "2026-07-30T15:26:02Z"
+    labels:
+      app.kubernetes.io/component: frontend
+      app.kubernetes.io/name: service-ticket-frontend
+      app.kubernetes.io/part-of: service-ticket-classifier
+    name: service-ticket-frontend
+    namespace: service-ticket
+    resourceVersion: "392119"
+    uid: 20c943b2-0e9b-400e-80be-eb04f59dc654
+  spec:
+    clusterIP: 172.20.118.57
+    clusterIPs:
+    - 172.20.118.57
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    selector:
+      app.kubernetes.io/name: service-ticket-frontend
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "5"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app.kubernetes.io/component":"api","app.kubernetes.io/name":"service-ticket-api","app.kubernetes.io/part-of":"service-ticket-classifier"},"name":"service-ticket-api","namespace":"service-ticket"},"spec":{"replicas":2,"revisionHistoryLimit":3,"selector":{"matchLabels":{"app.kubernetes.io/name":"service-ticket-api"}},"strategy":{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"},"template":{"metadata":{"labels":{"app.kubernetes.io/component":"api","app.kubernetes.io/name":"service-ticket-api","app.kubernetes.io/part-of":"service-ticket-classifier"}},"spec":{"containers":[{"envFrom":[{"configMapRef":{"name":"service-ticket-api-config"}},{"secretRef":{"name":"service-ticket-db-secret"}}],"image":"835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api:2aafa9ff13d4-12","imagePullPolicy":"IfNotPresent","livenessProbe":{"failureThreshold":3,"httpGet":{"path":"/api/","port":"http"},"initialDelaySeconds":20,"periodSeconds":20,"timeoutSeconds":3},"name":"api","ports":[{"containerPort":8000,"name":"http","protocol":"TCP"}],"readinessProbe":{"failureThreshold":3,"httpGet":{"path":"/api/","port":"http"},"periodSeconds":10,"successThreshold":1,"timeoutSeconds":3},"resources":{"limits":{"cpu":"1","memory":"1Gi"},"requests":{"cpu":"250m","memory":"512Mi"}},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"runAsNonRoot":true,"runAsUser":10001},"startupProbe":{"failureThreshold":30,"httpGet":{"path":"/api/","port":"http"},"periodSeconds":5,"timeoutSeconds":3}}],"securityContext":{"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}},"serviceAccountName":"service-ticket-api","terminationGracePeriodSeconds":30}}}}
+    creationTimestamp: "2026-07-30T15:26:02Z"
+    generation: 5
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/name: service-ticket-api
+      app.kubernetes.io/part-of: service-ticket-classifier
+    name: service-ticket-api
+    namespace: service-ticket
+    resourceVersion: "834009"
+    uid: 82f9a6b1-b6c2-45cb-a1c2-35216cbda234
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 2
+    revisionHistoryLimit: 3
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: service-ticket-api
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 0
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-07-30T19:39:37Z"
+        labels:
+          app.kubernetes.io/component: api
+          app.kubernetes.io/name: service-ticket-api
+          app.kubernetes.io/part-of: service-ticket-classifier
+      spec:
+        containers:
+        - envFrom:
+          - configMapRef:
+              name: service-ticket-api-config
+          - secretRef:
+              name: service-ticket-db-secret
+          image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api:2aafa9ff13d4-12
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 3
+          name: api
+          ports:
+          - containerPort: 8000
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            runAsUser: 10001
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /api/
+              port: http
+              scheme: HTTP
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 3
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        serviceAccount: service-ticket-api
+        serviceAccountName: service-ticket-api
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 2
+    conditions:
+    - lastTransitionTime: "2026-07-30T17:01:43Z"
+      lastUpdateTime: "2026-07-30T19:40:04Z"
+      message: ReplicaSet "service-ticket-api-5d5b4f45c7" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2026-07-31T13:15:42Z"
+      lastUpdateTime: "2026-07-31T13:15:42Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 5
+    readyReplicas: 2
+    replicas: 2
+    terminatingReplicas: 0
+    updatedReplicas: 2
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "3"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app.kubernetes.io/component":"frontend","app.kubernetes.io/name":"service-ticket-frontend","app.kubernetes.io/part-of":"service-ticket-classifier"},"name":"service-ticket-frontend","namespace":"service-ticket"},"spec":{"replicas":2,"revisionHistoryLimit":3,"selector":{"matchLabels":{"app.kubernetes.io/name":"service-ticket-frontend"}},"strategy":{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"},"template":{"metadata":{"labels":{"app.kubernetes.io/component":"frontend","app.kubernetes.io/name":"service-ticket-frontend","app.kubernetes.io/part-of":"service-ticket-classifier"}},"spec":{"containers":[{"image":"835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend:2aafa9ff13d4-12","imagePullPolicy":"IfNotPresent","livenessProbe":{"failureThreshold":5,"httpGet":{"path":"/","port":"http"},"initialDelaySeconds":20,"periodSeconds":10,"timeoutSeconds":5},"name":"frontend","ports":[{"containerPort":80,"name":"http","protocol":"TCP"}],"readinessProbe":{"failureThreshold":3,"httpGet":{"path":"/","port":"http"},"initialDelaySeconds":5,"periodSeconds":10,"timeoutSeconds":3},"resources":{"limits":{"cpu":"250m","memory":"256Mi"},"requests":{"cpu":"50m","memory":"64Mi"}}}]}}}}
+    creationTimestamp: "2026-07-30T15:26:03Z"
+    generation: 3
+    labels:
+      app.kubernetes.io/component: frontend
+      app.kubernetes.io/name: service-ticket-frontend
+      app.kubernetes.io/part-of: service-ticket-classifier
+    name: service-ticket-frontend
+    namespace: service-ticket
+    resourceVersion: "833927"
+    uid: 52b10f84-97fe-4ad1-a637-ff8538d59dc7
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 2
+    revisionHistoryLimit: 3
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: service-ticket-frontend
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 0
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: frontend
+          app.kubernetes.io/name: service-ticket-frontend
+          app.kubernetes.io/part-of: service-ticket-classifier
+      spec:
+        containers:
+        - image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend:2aafa9ff13d4-12
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: frontend
+          ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: 250m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 2
+    conditions:
+    - lastTransitionTime: "2026-07-30T15:26:03Z"
+      lastUpdateTime: "2026-07-30T17:10:05Z"
+      message: ReplicaSet "service-ticket-frontend-55f4556d89" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2026-07-31T13:15:29Z"
+      lastUpdateTime: "2026-07-31T13:15:29Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 3
+    readyReplicas: 2
+    replicas: 2
+    terminatingReplicas: 0
+    updatedReplicas: 2
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "2"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "5"
+    creationTimestamp: "2026-07-30T19:39:37Z"
+    generation: 2
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/name: service-ticket-api
+      app.kubernetes.io/part-of: service-ticket-classifier
+      pod-template-hash: 5d5b4f45c7
+    name: service-ticket-api-5d5b4f45c7
+    namespace: service-ticket
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: service-ticket-api
+      uid: 82f9a6b1-b6c2-45cb-a1c2-35216cbda234
+    resourceVersion: "834008"
+    uid: acde1244-960d-4ae4-bb95-01885bb3217d
+  spec:
+    replicas: 2
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: service-ticket-api
+        pod-template-hash: 5d5b4f45c7
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-07-30T19:39:37Z"
+        labels:
+          app.kubernetes.io/component: api
+          app.kubernetes.io/name: service-ticket-api
+          app.kubernetes.io/part-of: service-ticket-classifier
+          pod-template-hash: 5d5b4f45c7
+      spec:
+        containers:
+        - envFrom:
+          - configMapRef:
+              name: service-ticket-api-config
+          - secretRef:
+              name: service-ticket-db-secret
+          image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api:2aafa9ff13d4-12
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 3
+          name: api
+          ports:
+          - containerPort: 8000
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            runAsUser: 10001
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /api/
+              port: http
+              scheme: HTTP
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 3
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        serviceAccount: service-ticket-api
+        serviceAccountName: service-ticket-api
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 2
+    fullyLabeledReplicas: 2
+    observedGeneration: 2
+    readyReplicas: 2
+    replicas: 2
+    terminatingReplicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "2"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "2"
+    creationTimestamp: "2026-07-30T15:45:22Z"
+    generation: 2
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/name: service-ticket-api
+      app.kubernetes.io/part-of: service-ticket-classifier
+      pod-template-hash: 5dc8b5b8db
+    name: service-ticket-api-5dc8b5b8db
+    namespace: service-ticket
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: service-ticket-api
+      uid: 82f9a6b1-b6c2-45cb-a1c2-35216cbda234
+    resourceVersion: "430438"
+    uid: 794c0a00-96b1-4fb9-a072-e19a547657a5
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: service-ticket-api
+        pod-template-hash: 5dc8b5b8db
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: api
+          app.kubernetes.io/name: service-ticket-api
+          app.kubernetes.io/part-of: service-ticket-classifier
+          pod-template-hash: 5dc8b5b8db
+      spec:
+        containers:
+        - envFrom:
+          - configMapRef:
+              name: service-ticket-api-config
+          - secretRef:
+              name: service-ticket-db-secret
+          image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api:fcdee34f15e5-11
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 3
+          name: api
+          ports:
+          - containerPort: 8000
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            runAsUser: 10001
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 3
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        serviceAccount: service-ticket-api
+        serviceAccountName: service-ticket-api
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+    terminatingReplicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "2"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "3"
+    creationTimestamp: "2026-07-30T17:09:09Z"
+    generation: 3
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/name: service-ticket-api
+      app.kubernetes.io/part-of: service-ticket-classifier
+      pod-template-hash: 786cbd87d5
+    name: service-ticket-api-786cbd87d5
+    namespace: service-ticket
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: service-ticket-api
+      uid: 82f9a6b1-b6c2-45cb-a1c2-35216cbda234
+    resourceVersion: "430530"
+    uid: 0808497d-afa9-4cc8-95d4-a8b5813bf603
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: service-ticket-api
+        pod-template-hash: 786cbd87d5
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: api
+          app.kubernetes.io/name: service-ticket-api
+          app.kubernetes.io/part-of: service-ticket-classifier
+          pod-template-hash: 786cbd87d5
+      spec:
+        containers:
+        - envFrom:
+          - configMapRef:
+              name: service-ticket-api-config
+          - secretRef:
+              name: service-ticket-db-secret
+          image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api:2aafa9ff13d4-12
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 3
+          name: api
+          ports:
+          - containerPort: 8000
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            runAsUser: 10001
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 3
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        serviceAccount: service-ticket-api
+        serviceAccountName: service-ticket-api
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 3
+    replicas: 0
+    terminatingReplicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "2"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "4"
+    creationTimestamp: "2026-07-30T17:14:53Z"
+    generation: 5
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/name: service-ticket-api
+      app.kubernetes.io/part-of: service-ticket-classifier
+      pod-template-hash: db644dff8
+    name: service-ticket-api-db644dff8
+    namespace: service-ticket
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: service-ticket-api
+      uid: 82f9a6b1-b6c2-45cb-a1c2-35216cbda234
+    resourceVersion: "478004"
+    uid: 98be8a52-bd9d-45a1-a609-235a95fdf527
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: service-ticket-api
+        pod-template-hash: db644dff8
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: api
+          app.kubernetes.io/name: service-ticket-api
+          app.kubernetes.io/part-of: service-ticket-classifier
+          pod-template-hash: db644dff8
+      spec:
+        containers:
+        - envFrom:
+          - configMapRef:
+              name: service-ticket-api-config
+          - secretRef:
+              name: service-ticket-db-secret
+          image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-api:2aafa9ff13d4-12
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 3
+          name: api
+          ports:
+          - containerPort: 8000
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            runAsUser: 10001
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /api/
+              port: http
+              scheme: HTTP
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 3
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        serviceAccount: service-ticket-api
+        serviceAccountName: service-ticket-api
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 5
+    replicas: 0
+    terminatingReplicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "2"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "3"
+    creationTimestamp: "2026-07-30T17:09:09Z"
+    generation: 2
+    labels:
+      app.kubernetes.io/component: frontend
+      app.kubernetes.io/name: service-ticket-frontend
+      app.kubernetes.io/part-of: service-ticket-classifier
+      pod-template-hash: 55f4556d89
+    name: service-ticket-frontend-55f4556d89
+    namespace: service-ticket
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: service-ticket-frontend
+      uid: 52b10f84-97fe-4ad1-a637-ff8538d59dc7
+    resourceVersion: "833925"
+    uid: cc179458-b922-47d1-ab5f-538d0e5ce66d
+  spec:
+    replicas: 2
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: service-ticket-frontend
+        pod-template-hash: 55f4556d89
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: frontend
+          app.kubernetes.io/name: service-ticket-frontend
+          app.kubernetes.io/part-of: service-ticket-classifier
+          pod-template-hash: 55f4556d89
+      spec:
+        containers:
+        - image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend:2aafa9ff13d4-12
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: frontend
+          ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: 250m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 2
+    fullyLabeledReplicas: 2
+    observedGeneration: 2
+    readyReplicas: 2
+    replicas: 2
+    terminatingReplicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "2"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-07-30T15:26:03Z"
+    generation: 3
+    labels:
+      app.kubernetes.io/component: frontend
+      app.kubernetes.io/name: service-ticket-frontend
+      app.kubernetes.io/part-of: service-ticket-classifier
+      pod-template-hash: 76487c4466
+    name: service-ticket-frontend-76487c4466
+    namespace: service-ticket
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: service-ticket-frontend
+      uid: 52b10f84-97fe-4ad1-a637-ff8538d59dc7
+    resourceVersion: "398948"
+    uid: 04946913-72ea-4df6-aad5-9009d7f5ca54
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: service-ticket-frontend
+        pod-template-hash: 76487c4466
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: frontend
+          app.kubernetes.io/name: service-ticket-frontend
+          app.kubernetes.io/part-of: service-ticket-classifier
+          pod-template-hash: 76487c4466
+      spec:
+        containers:
+        - image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend:513b758bf857-10
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: frontend
+          ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: 250m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 3
+    replicas: 0
+    terminatingReplicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "2"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "2"
+    creationTimestamp: "2026-07-30T15:45:23Z"
+    generation: 4
+    labels:
+      app.kubernetes.io/component: frontend
+      app.kubernetes.io/name: service-ticket-frontend
+      app.kubernetes.io/part-of: service-ticket-classifier
+      pod-template-hash: 77b68bcdfd
+    name: service-ticket-frontend-77b68bcdfd
+    namespace: service-ticket
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: service-ticket-frontend
+      uid: 52b10f84-97fe-4ad1-a637-ff8538d59dc7
+    resourceVersion: "428378"
+    uid: eb76f59c-3920-4cce-96ac-b45fb78b35bf
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: service-ticket-frontend
+        pod-template-hash: 77b68bcdfd
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: frontend
+          app.kubernetes.io/name: service-ticket-frontend
+          app.kubernetes.io/part-of: service-ticket-classifier
+          pod-template-hash: 77b68bcdfd
+      spec:
+        containers:
+        - image: 835577334660.dkr.ecr.us-east-1.amazonaws.com/service-ticket-frontend:fcdee34f15e5-11
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: frontend
+          ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: 250m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 4
+    replicas: 0
+    terminatingReplicas: 0
+kind: List
+metadata:
+  resourceVersion: ""
