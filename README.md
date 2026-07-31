@@ -4,7 +4,7 @@ A small full-stack project that classifies IT support tickets, suggests related 
 
 I built this project mainly to learn how the different parts of an ML application fit together once it leaves a notebook. The final version includes a React frontend, FastAPI backend, PostgreSQL with pgvector, separate training and retraining jobs, Docker images, Kubernetes manifests, Terraform infrastructure, and GitHub Actions workflows running on self-hosted runners.
 
-This project's CI/CD runs entirely on a self-hosted Actions Runner Controller platform built as a separate project ([Secure Self-Hosted CI Platform]). Instead of relying on GitHub-hosted runners, each workflow spins up an ephemeral runner inside my own AWS environment, uses IAM permissions directly, and is deleted once the job finishes. Connecting the two projects allowed me to use one as the delivery platform for the other while avoiding long-lived AWS credentials in GitHub Secrets.
+This project's CI/CD runs entirely on a self-hosted Actions Runner Controller platform built as a separate project ([Secure Self-Hosted CI Platform](https://github.com/mantavya-se/secure-self-hosted-ci-platform)). Instead of relying on GitHub-hosted runners, each workflow spins up an ephemeral runner inside my own AWS environment, uses IAM permissions directly, and is deleted once the job finishes. Connecting the two projects allowed me to use one as the delivery platform for the other while avoiding long-lived AWS credentials in GitHub Secrets.
 
 > This is a personal project and proof of concept. It is not connected to a live help desk and is not intended to be presented as a production-ready support system.
 
