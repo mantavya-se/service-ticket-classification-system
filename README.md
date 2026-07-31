@@ -12,30 +12,9 @@ This project's CI/CD runs entirely on a self-hosted Actions Runner Controller pl
 
 ## Demo
 
-Add the screenshots.
+https://github.com/user-attachments/assets/89210ecc-8706-4577-8c9a-e68dc37c3dff
 
-Suggested order:
-
-1. Ticket submission page
-2. Classification result with category and confidence
-3. Retrieved troubleshooting suggestions
-4. Ticket history and review page
-5. GitHub Actions build workflow
-6. GitHub Actions deployment workflow
-7. GitHub Actions retraining workflow
-8. Kubernetes resources
-9. EKS cluster
-10. ECR repositories
-11. S3 folder structure
-12. RDS and pgvector
-13. ALB and healthy targets
-14. ARC runner scaling from zero to one
-
-Example:
-
-```md
-![Ticket classification result](docs/images/classification-result.png)
-```
+Screenshots for AWS resources that were provisioned and k8s resources can be seen at: [Resource Images](./Project3_images)
 
 ---
 
